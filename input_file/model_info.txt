@@ -1,0 +1,5 @@
+inputdata_file_name     input.txt           # name of the input file with the spectral data for the candidates to be read
+output_file_name        example1.out        # name of the output file with the inferred masses. if "-" is given, the output file name is given with the candidate names. If there is one candidate in the input file, output_file_name = "candidate-name.txt". If there are more than two, output_file_name = "first-candidate-name_last-candidate-name.txt"
+c1                      1.0		
+del_omega               2.0                 # in units of pi
+N_sampling              100                 

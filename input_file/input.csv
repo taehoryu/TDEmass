@@ -1,0 +1,3 @@
+﻿candidate_name,mstar_min[msol],mstar_max[msol],mbh_min[10^6msol],mbh_max[10^6msol],Lobs[erg/s],Lobs_1[erg/s],Lobs_2[erg/s],Tobs[K],Tobs_1[K],Tobs_2[K]
+ASASSN-18pg/AT2018dyb,0.1,10,0.1,50,1.12E+44,4.91E+43,4.63E+43,25000,5000,5000
+ASASSN-18ul/AT2018fyk,0.1,10,0.1,50,3.24E+44,2.85E+43,3.12E+43,38000,3000,3000
