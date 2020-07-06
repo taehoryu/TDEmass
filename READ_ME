@@ -54,35 +54,35 @@ Before running, you should prepare two input files in "input_file" directory:  o
 			Candidate_name   mstar_min   mstar_max   mbh_min   mbh_max    Lobs    Lobs_1    Lobs_2    Tobs    Tobs_1    Tobs_2
 
 
-		- Candidate_name : you can put any name here. This name has nothing to do with mass inference, but will be shown in resulting figures.
+		- Candidate_name : you can put any name here. This name has nothing to do with mass inference, but will be shown in solution figures (see 4. output).
 
-		- mstar_min, mstar_max : These two defines the range of stellar mass [mstar_min, mstar_max], in units of solar mass, within which the solver tries to find the solution. If the solutions are not found, you can increase the range and re-run the code. 
+		- mstar_min, mstar_max : These two define the range of stellar mass [mstar_min, mstar_max], in units of solar mass, within which the solver tries to find the solution. If the solutions are not found, you can increase the range and re-run the code. 
 
-		- mbh_min, mbh_max : the range of black hole mass, in units of solar mass [mbh_min, mbh_max], within which the solver tries to find the solution. 
+		- mbh_min, mbh_max : the range of black hole mass, in units of 10^{6} solar mass [mbh_min, mbh_max], within which the solver tries to find the solution. 
 
 		- Lobs  : the peak luminosity in units of erg/s. 
-		- Lobs_1, Lobs_2 : These two is determined by the uncertainties in L. (IMPORTANT) L_1 is the uncertainty for the lower bound and L_2 is the uncertainty for the upper bound. In other words, Lobs - Lobs_1 and Lobs + Lobs_2 are the lower and upper bounds for Lobs, respectively. For example, if log10(Lobs)=43_{-0.1}^{+0.1}, Lobs = 10^43, Lobs_1 = 10^{43}-10^{43-0.1} = 2.1*10^42 and Lobs_2 = 10^{43+0.1} - 10^{43} = 2.6*10^42. 
+		- Lobs_1, Lobs_2 : These two are determined by the uncertainties in Lobs. (IMPORTANT) L_1 is the uncertainty for the lower bound and L_2 is the uncertainty for the upper bound. In other words, Lobs - Lobs_1 and Lobs + Lobs_2 are the lower and upper bounds for Lobs, respectively. For example, if log10(Lobs)=43_{-0.1}^{+0.1}, Lobs = 10^43, Lobs_1 = 10^{43}-10^{43-0.1} = 2.1*10^42 and Lobs_2 = 10^{43+0.1} - 10^{43} = 2.6*10^42. 
 
 		- Tobs : the black body temperature at the peak luminosity in units of K
 
 		- Tobs_1, Tobs_2 : Same for Lobs_1 and Lobs_2. See the definitions for Lobs_1 and Lobs_2.
 
 
-		The input.csv file in "example" directory has two examples. you can take copy and paste the file to put it in the same level
+		The input.csv file in "example" directory has two examples. you can take copy and paste the file and put it in "input_file" directory
 
-4. Output data format
+4. Output
 
-The code produces three different output files. 2) a plot for the solutions on the mbh - mstar plane for each candidate given in the input data file. 3) A plot for the solutions and the error bars on the mbh - mstar plane for all candidates given in the input data file. All these output files are saved in "output" directory.
+The code produces three different output files. All these output files are saved in "output" directory.
 
 	1) table with the inferred black hole mass for the candidates
 
 		This output file consists of 13 columns. The first seven columns are identical to those in the input data file. The rest columns are the inferred black hole mass[mbh], its uncertainties [mbh_1,mbh_2], the inferred stellar mass [mstar] and its uncertainties[mstar_1,mstar_2]. The uncertainties for the inferred masses are defined the same way as those for Lobs and Tobs. The name of the output file is given in the "model_info.txt"
 
-	2) solution figure for each candidate
+	2) solution figure on the mbh - mstar plane for each candidate
 
 		The plots are created as many as the number of the candidates given in the input data file. There are two strips as long as the solutions are within the ranges of mbh and mstar set in the input data file. The blue strip demarcates the solutions for the given Lobs and the red strip for the given Tobs. The X-hatched green region indicates the solutions for the given Lobs and Tobs. 
 
-	3) solution figure for all candidates
+	3) solution figure on the mbh - mstar plane for all candidates
 
 		The name of the figure is  "c1_(c1_value)_del_omega_(del Omega value)_inferred_mass.png"
 		"c1_value" and "del Omega value" are the values of c_1 and Del_omega, respectively.
