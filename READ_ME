@@ -9,9 +9,9 @@
 3) solver2_LT() : 2-dimensional Newtonian-Raphson method.
 
 
-2. Install and run
+2. Download and run
 
-To install, clone the git repository using HTTP access :
+To download, clone the git repository using HTTP access :
 
 https://github.com/taehoryu/TDE_mass_inference.git
 
