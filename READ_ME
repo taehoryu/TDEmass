@@ -60,7 +60,7 @@
 		- mbh_min, mbh_max : the range of black hole mass, in units of 10^{6} solar mass [mbh_min, mbh_max], within which the solvers try to find the solution. 
 
 		- Lobs  : the peak luminosity in units of erg/s. 
-		- Lobs_1, Lobs_2 : These two are determined by the uncertainties in Lobs. (IMPORTANT) Lobs - Lobs_1 and Lobs + Lobs_2 are the lower and upper limits for Lobs, respectively. For example, if log10(Lobs)=43_{-0.1}^{+0.1}, Lobs = 10^43, Lobs_1 = 10^{43}-10^{43-0.1} = 2.1*10^42 and Lobs_2 = 10^{43+0.1} - 10^{43} = 2.6*10^42. All uncertainties (e.g., for Tobs, mbh and mstar) are defined the same way.
+		- Lobs_1, Lobs_2 : These two are determined by the uncertainties in Lobs. (IMPORTANT) Lobs - Lobs_1 and Lobs + Lobs_2 are the lower and upper limits for Lobs, respectively. For example, if log10(Lobs)=43_{-0.1}^{+0.1}, Lobs = 10^43, Lobs_1 = 10^{43}-10^{43-0.1} = 2.1*10^42 and Lobs_2 = 10^{43+0.1} - 10^{43} = 2.6*10^42. This definition applies to the uncertainties for Tobs, mbh and mstar.
 
 		- Tobs : the black body temperature at the peak luminosity in units of K
 
