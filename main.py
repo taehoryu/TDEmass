@@ -17,7 +17,6 @@ fileDir = os.path.dirname(os.path.realpath('__file__'))
 
 ####################################################
 #   Define a few parameters
-####################################################
 figure_storage = "output"
 module.make_sure_path_exists(figure_storage)
 
@@ -31,10 +30,11 @@ plot_quality = 200
 TOL = 1e-7
 tot_input_variable_count = 4
 check_input = [0,0,0,0,0,0,0]
+####################################################
 
 
 
-#Read key input parameter and input file name
+#Read key input parameter, input file name and output file name
 inputdata_file_name, output_file_name, c1, del_omega, N_sampling = module.read_model_input()
 
 
@@ -103,21 +103,14 @@ for sample in range(samplesize):
         #First try to find the solution
         
         retv, mbh_sol,mstar_sol = module.solver1_LT(Lpeak_array[0][sample],Tpeak_array[0][sample],centroid_bh,centroid_star,c1,del_omega)
-        L_check =module.get_Lobs(mbh_sol,mstar_sol,module.get_rstar(mstar_sol),c1,2.0)
-        T_check =module.get_Tobs(mbh_sol,mstar_sol,module.get_rstar(mstar_sol),c1,del_omega,2.0)
-        error_L =np.abs(L_check-Lpeak_array[0][sample])/Lpeak_array[0][sample]
-        error_T =np.abs(T_check-Tpeak_array[0][sample])/Tpeak_array[0][sample]
         #Check if the solutions are correct. If not try the second solver
+        error_L, error_T = module.relative_error_calc(LPEAK, TPEAK,Lpeak_array[0][sample],Tpeak_array[0][sample], mbh_sol,mstar_sol,c1,del_omega)
+
         if(retv!=0 or error_L > TOL or error_T > TOL):
             print ( index_array[sample]," Solver [1] fails -> Try Solver[2]")
             
             retv, mbh_sol, mstar_sol = module.solver2_LT (Lpeak_array[0][sample], Tpeak_array[0][sample], centroid_bh,centroid_star,c1,del_omega)
-            L_check =module.get_Lobs(mbh_sol,mstar_sol,module.get_rstar(mstar_sol),c1,2.0)
-            T_check =module.get_Tobs(mbh_sol,mstar_sol,module.get_rstar(mstar_sol),c1,del_omega,2.0)
-            error_L =np.abs(L_check-Lpeak_array[0][sample])/Lpeak_array[0][sample]
-            error_T =np.abs(T_check-Tpeak_array[0][sample])/Tpeak_array[0][sample]
-            
-        
+            error_L, error_T = module.relative_error_calc(LPEAK, TPEAK,Lpeak_array[0][sample],Tpeak_array[0][sample], mbh_sol,mstar_sol,c1,del_omega)
         if(error_L<TOL and error_T<TOL):
             error_bh_l = mbh_sol - min_bh
             error_bh_h = max_bh - mbh_sol

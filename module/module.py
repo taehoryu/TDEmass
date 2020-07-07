@@ -749,3 +749,22 @@ def find_centroid_range(N_sampling,mbh,mstar,double_intersection):
     max_star = np.amax(star_array)
     min_star = np.amin(star_array)
     return centroid_bh,min_bh,max_bh,centroid_star,min_star,max_star
+
+
+
+def relative_error_calc(param1, param2,val_ref1,val_ref2, mbh_sol,mstar_sol,c1,del_omega):
+    param = [param1,param2]
+    val_ref = [val_ref1,val_ref2]
+    LPEAK = 0
+    TPEAK = 1
+
+    error = [[],[]]
+    for i in range(len(param)):
+        if(param[i]==LPEAK):
+            val = get_Lobs(mbh_sol,mstar_sol,get_rstar(mstar_sol),c1,2.0)
+            error[LPEAK] = np.abs((val_ref[LPEAK]-val)/val_ref[LPEAK])
+        elif(param[i]==TPEAK):
+            val = get_Tobs(mbh_sol,mstar_sol,get_rstar(mstar_sol),c1,del_omega,2.0)
+            error[TPEAK] = np.abs((val_ref[TPEAK]-val)/val_ref[TPEAK])
+
+    return error[LPEAK],error[TPEAK]
