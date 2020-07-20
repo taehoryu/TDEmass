@@ -4,7 +4,7 @@ import os
 import os.path
 import matplotlib.pyplot as plt
 import matplotlib
-matplotlib.use('Agg')
+#matplotlib.use('Agg')
 import matplotlib.colors as colors
 import matplotlib.cm as cm
 from matplotlib.offsetbox import TextArea, VPacker, AnnotationBbox
@@ -74,20 +74,21 @@ def plotting(index_label,figure_storage, plot_array, mbh, mstar, mass_range_arra
 
 
 
-def plot_double_intersection(figure_storage,index_array,plot_array,mass_range_array,plot_format,plot_quality,c1,del_omega,samplesize,mbh_sol_array,mstar_sol_array):
+def plot_double_intersection(figure_storage,index_array,plot_array,mass_range_array,plot_format,plot_quality,c1,del_omega,samplesize,mbh_sol_array,mstar_sol_array,solution_exist):
     marker = itertools.cycle(('<', 'X', '^', 'o', '*','>','p','s'))
     colors=["blue", "red", "green", "magenta","orange","grey"]
     matplotlib.rcParams.update({'font.size': 20})
     temp_array=[[[],[]],[[],[]]]
     for sample in range(samplesize):
-        mbh_lo = mbh_sol_array[sample][0] - mbh_sol_array[sample][1]
-        mbh_hi = mbh_sol_array[sample][2] + mbh_sol_array[sample][0]
-        mstar_lo = mstar_sol_array[sample][0] - mstar_sol_array[sample][1]
-        mstar_hi = mstar_sol_array[sample][2] + mstar_sol_array[sample][0]
-        temp_array[0][0].append(mbh_lo)
-        temp_array[0][1].append(mbh_hi)
-        temp_array[1][0].append(mstar_lo)
-        temp_array[1][1].append(mstar_hi)
+        if(solution_exist[sample]==0):
+            mbh_lo = mbh_sol_array[sample][0] - mbh_sol_array[sample][1]
+            mbh_hi = mbh_sol_array[sample][2] + mbh_sol_array[sample][0]
+            mstar_lo = mstar_sol_array[sample][0] - mstar_sol_array[sample][1]
+            mstar_hi = mstar_sol_array[sample][2] + mstar_sol_array[sample][0]
+            temp_array[0][0].append(mbh_lo)
+            temp_array[0][1].append(mbh_hi)
+            temp_array[1][0].append(mstar_lo)
+            temp_array[1][1].append(mstar_hi)
         
     mbh = 10.0** np.linspace(np.log10(np.amin(temp_array[0][0]))*0.75,np.log10(np.amax(temp_array[0][1]))*1.25,100)
     mstar = 10.0** np.linspace(np.log10(np.amin(temp_array[1][0]))*0.75,np.log10(np.amax(temp_array[1][1]))*1.25,100)
@@ -119,6 +120,7 @@ def plot_double_intersection(figure_storage,index_array,plot_array,mass_range_ar
     max_bh = -1e100
     max_star = -1e100
     for sample in range(samplesize):
+      if(solution_exist[sample]==0):
         mean_bh = 0.0
         mean_star = 0.0
         area_total = 0.0
@@ -141,7 +143,7 @@ def plot_double_intersection(figure_storage,index_array,plot_array,mass_range_ar
             max_bh = max(bh_sol + mbh_sol_array[sample][2], max_bh)
             min_star = min(star_sol - mstar_sol_array[sample][1], min_star)
             max_star = max(star_sol + mstar_sol_array[sample][2], max_star)
-    ax.legend(loc=2,fontsize=8)
+    ax.legend(loc=2,fontsize=5)
     ax.set_xscale("log")
     ax.set_yscale("log")
     

@@ -26,7 +26,13 @@ def read_model_input():
         file_line = file.readlines()
         c1 = 1.0
         Del_omega = 2.0 * math.pi
-        N_sampling = 300
+        N_sampling = 500
+        mstar_min = 0.1
+        mstar_max = 20.0
+        mbh_min = 0.1
+        mbh_max = 50.0
+        mstar_search_range = np.zeros(2)
+        mbh_search_range = np.zeros(2)
         for line in file_line:
             if not line.isspace():
                 p=line.split()
@@ -42,9 +48,14 @@ def read_model_input():
                     c1 = float(p[1])
                 if(p[0]=="Del_omega"):
                     Del_omega = float(p[1])*math.pi
-                if(p[0]=="N_sampling"):
-                    N_sampling = int(p[1])
-        return inputdata_file_name,output_file_name, c1, Del_omega,N_sampling
+                if(p[0]=="mstar_range"):
+                    mstar_search_range[0] = max(mstar_min, float(p[1]))
+                    mstar_search_range[1] = min(mstar_max, float(p[2]))
+                if(p[0]=="mbh_range"):
+                    mbh_search_range[0] = max(mbh_min, float(p[1]))
+                    mbh_search_range[1] = min(mbh_max, float(p[2]))
+
+        return inputdata_file_name,output_file_name, c1, Del_omega,mstar_search_range,mbh_search_range
 
 
 ######################################
@@ -52,7 +63,7 @@ def read_model_input():
 #   - routine that reads Lobs and Tobs from the input file designated in "model_info.txt"
 ######################################
 
-def read_input_data(inputdata_file_name):
+def read_input_data(inputdata_file_name,mstar_search_range, mbh_search_range):
     if(".csv" in inputdata_file_name):
         format = "csv"
     elif(".txt" in inputdata_file_name):
@@ -87,11 +98,10 @@ def read_input_data(inputdata_file_name):
                 p = line#.split()
                 if("candidate_name" not in p[0]):
                     index_array.append(p[0])
-                    mstar_range.append([float(p[1]),float(p[2])])
-                    mbh_range.append([float(p[3]),float(p[4])])
-    
-                    Lpeak_array = add_array(5, p, Lpeak_array,min_error)
-                    Tpeak_array = add_array(8, p, Tpeak_array,min_error)
+                    mstar_range.append(mstar_search_range)
+                    mbh_range.append(mbh_search_range)
+                    Lpeak_array = add_array(1, p, Lpeak_array,min_error)
+                    Tpeak_array = add_array(4, p, Tpeak_array,min_error)
                    # time_array = add_array_time(11, p, time_array,min_error)
                    # MBH_array = add_array(13, p, MBH_array, min_error)
                    # Mhost_array = add_array(16,p,Mhost_array,min_error)
@@ -106,10 +116,10 @@ def read_input_data(inputdata_file_name):
                     if("candidate_name" not in p[0]):
 
                         index_array.append(p[0])
-                        mstar_range.append([float(p[1]),float(p[2])])
-                        mbh_range.append([float(p[3]),float(p[4])])
-                        Lpeak_array = add_array(5, p, Lpeak_array,min_error)
-                        Tpeak_array = add_array(8, p, Tpeak_array,min_error)
+                        mstar_range.append(mstar_search_range)
+                        mbh_range.append(mbh_search_range)
+                        Lpeak_array = add_array(1, p, Lpeak_array,min_error)
+                        Tpeak_array = add_array(4, p, Tpeak_array,min_error)
                   #      time_array = add_array_time(11, p, time_array,min_error)
                   #      MBH_array = add_array(13, p, MBH_array, min_error)
                   #      Mhost_array = add_array(16,p,Mhost_array,min_error)
@@ -650,9 +660,8 @@ def find_mbh_mstar_from_input(input_array,sample,mbh_mstar_array,N_sampling,mbh,
     MBH = 4
     found = 0
     min_error = 0.00 #in percentile
-    min_range = 0.05
-
-   
+    min_range = 0.001
+    t0_array=[]
     A_obs = input_array[0][sample]
     error1 = input_array[1][sample][0]
     error2 = input_array[1][sample][1]
@@ -667,7 +676,9 @@ def find_mbh_mstar_from_input(input_array,sample,mbh_mstar_array,N_sampling,mbh,
                 bh = mbh[i_bh]
                 star = mstar[i_star]
                 rstar = get_rstar(star)
+                
                 t_obs = get_tpeak(bh,star,rstar)
+                t0 = get_t0(bh,star,rstar)
                 if(input_kind==LPEAK):
                     peak_value[i_star,i_bh] = get_Lobs(bh,star,rstar,c1,t_obs)
                 elif(input_kind ==TPEAK):
@@ -681,24 +692,30 @@ def find_mbh_mstar_from_input(input_array,sample,mbh_mstar_array,N_sampling,mbh,
                         nan = "NaN"
                     else:
                         nan = "Inf"
-                if((A_obs_range[1] - A_obs_range[0]>0.0 and peak_value[i_star,i_bh] > A_obs_range[0] and peak_value[i_star,i_bh] < A_obs_range[1]) or  np.abs(peak_value[i_star,i_bh]-A_obs_range[0])/A_obs_range[0] < min_range):
+                if((A_obs_range[1] - A_obs_range[0]>0.0 and peak_value[i_star,i_bh] > A_obs_range[0] and peak_value[i_star,i_bh] < A_obs_range[1])):
                         
                         mbh_mstar_array[input_count][0].append(bh)
                         mbh_mstar_array[input_count][1].append(star)
+                        
                         mass_range_array[input_count,i_star,i_bh] = 1.0
                         found = 1
 #                        overall_intersection[i_star,i_bh] = overall_intersection[i_star,i_bh] + 1
                         if(input_kind==LPEAK or input_kind==TPEAK):
                             double_intersection[i_star,i_bh] = double_intersection[i_star,i_bh] + 1
+                            if(double_intersection[i_star,i_bh]==2):
+                                t0_array.append(t0)
         mbh_mstar_array[input_count][0] = np.array(mbh_mstar_array[input_count][0])
         mbh_mstar_array[input_count][1] = np.array(mbh_mstar_array[input_count][1])
-        if(found==0):
-            print ("No inferred mass within the given search range (0: Lpeak, 1: Tpeak)", input_kind)
+#        if(found==0):
+#            print ("No inferred mass within the given search range (0: Lpeak, 1: Tpeak)", input_kind)
     else:
         print ("INPUT VALUE IS ZERO")
-
-
-    return double_intersection,mbh_mstar_array,mass_range_array,nan
+    
+    if(len(t0_array)>0):
+        t0_range = np.array([np.amin(t0_array),np.amax(t0_array)])
+    else:
+        t0_range = np.zeros(2)
+    return double_intersection,mbh_mstar_array,mass_range_array,nan,t0_range
 
 
 
@@ -742,14 +759,29 @@ def find_centroid_range(N_sampling,mbh,mstar,double_intersection):
                 area_total = area_total + area
                 bh_array.append(mbh[i_bh])
                 star_array.append(mstar[i_star])
-    centroid_bh = accu_bh/ area_total
-    centroid_star = accu_star/ area_total
-    max_bh = np.amax(bh_array)
-    min_bh = np.amin(bh_array)
-    max_star = np.amax(star_array)
-    min_star = np.amin(star_array)
-    return centroid_bh,min_bh,max_bh,centroid_star,min_star,max_star
+    if(area_total>0.0):
+        centroid_bh = accu_bh/ area_total
+        centroid_star = accu_star/ area_total
+        max_bh = np.amax(bh_array)
+        min_bh = np.amin(bh_array)
+        max_star = np.amax(star_array)
+        min_star = np.amin(star_array)
+        retv_centroid = 0
+    else:
+        centroid_bh = 0.0
+        centroid_star = 0.0
+        min_bh = 0.0
+        max_bh = 0.0
+        min_star = 0.0
+        max_star = 0.0
+        retv_centroid = 1
+    return centroid_bh,min_bh,max_bh,centroid_star,min_star,max_star,retv_centroid
 
+
+######################################
+#   relative_error_calc()
+#   - calculate the relative error
+######################################
 
 
 def relative_error_calc(param1, param2,val_ref1,val_ref2, mbh_sol,mstar_sol,c1,del_omega):
@@ -768,3 +800,61 @@ def relative_error_calc(param1, param2,val_ref1,val_ref2, mbh_sol,mstar_sol,c1,d
             error[TPEAK] = np.abs((val_ref[TPEAK]-val)/val_ref[TPEAK])
 
     return error[LPEAK],error[TPEAK]
+
+
+######################################
+#   get_t0_error()
+#   - calculate t0 and its error assuming there are not correlations between mbh and mstar.
+######################################
+def get_t0_error(mbh_sol_array,mstar_sol_array):
+    mbh_sol = mbh_sol_array[0]
+    error_bh_l = mbh_sol_array[1]
+    error_bh_h = mbh_sol_array[2]
+    mstar_sol = mstar_sol_array[0]
+    error_star_l = mstar_sol_array[1]
+    error_star_h = mstar_sol_array[2]
+    tp =  get_t0(mbh_sol,mstar_sol,get_rstar(mstar_sol))/60.0/60.0/24.0
+    mbh_r = np.linspace(mbh_sol - error_bh_l,mbh_sol + error_bh_h, 300)
+    mstar_r = np.linspace(mstar_sol - error_star_l,mstar_sol + error_star_h,300)
+    tp_error=[]
+    for mmbh in mbh_r:
+        for mmstar in mstar_r:
+            rrstar = get_rstar(mmstar)
+            tt0 = get_t0(mmbh,mmstar,rrstar)/60/60/24.
+            tp_error.append(tt0)
+
+    tp_l = np.amin(tp_error)
+    tp_h = np.amax(tp_error)
+    error_tp_l = tp - tp_l
+    error_tp_h = tp_h - tp
+    return tp,error_tp_l,error_tp_h
+
+
+def write_output(output_file,retv_centroid,index_array,mbh_sol_array,mstar_sol_array,
+    lpeak,lpeak_error,Tpeak,Tpeak_error,t0_sol,error_t0_l,error_t0_h):
+
+    mbh_sol = mbh_sol_array[0]
+    error_bh_l = mbh_sol_array[1]
+    error_bh_h = mbh_sol_array[2]
+    mstar_sol = mstar_sol_array[0]
+    error_star_l = mstar_sol_array[1]
+    error_star_h = mstar_sol_array[2]
+    l_error1 = lpeak_error[0]
+    l_error2 = lpeak_error[1]
+    T_error1 = Tpeak_error[0]
+    T_error2 = Tpeak_error[1]
+    if(retv_centroid==0):
+        output_file.write("{:^25}".format(index_array)+"{:11.2g}".format(lpeak)+
+        "{:14.2g}".format(l_error1)+"{:15.2g}".format(l_error2)+"{:13.2g}".format(Tpeak)+
+        "{:11.2g}".format(T_error1)+"{:12.2g}".format(T_error2)+"{:13.2g}".format(mbh_sol)+
+        "{:15.2g}".format(error_bh_l)+"{:18.2g}".format(error_bh_h)+"{:15.2g}".format(mstar_sol)+
+        "{:15.2g}".format(error_star_l)+"{:14.2g}".format(error_star_h)+
+        "{:12.2g}".format(t0_sol)+"{:11.2g}".format(error_t0_l)+"{:11.2g}".format(error_t0_h)+"\n")
+
+    else:
+        output_file.write("{:^25}".format(index_array)+"{:11.2g}".format(lpeak)+
+        "{:14.2g}".format(l_error1)+"{:15.2g}".format(l_error2)+"{:13.2g}".format(Tpeak)+
+        "{:11.2g}".format(T_error1)+"{:12.2g}".format(T_error2)+"{:^21}".format(" -")+"{:^12}".format("-")+
+        "{:^20}".format("-")+"{:^12}".format("-")+"{:^15}".format("-")+"{:^15}".format("-")+
+        "{:^12}".format("-")+"{:^12}".format("-")+"{:^10}".format("-")+"\n")
+
