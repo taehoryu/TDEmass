@@ -22,7 +22,7 @@
 Our model includes two free parameters, c_1 and Del_omega. c_1*a_0 is the distance from the black hole at which a significant amount of energy is dissipated by shocks. 
 Here, a_0 is the apocenter distance for the orbit of the most tightly bound debris. Del_omega is the solid angle. 
 So Del_omega * (c_1 * a_0)^2 corresponds to the surface area of the emitting region. 
-So For fixed Lobs and Tobs, larger Del_omega leads to smaller mbh and mstar, but the dependence is weak.  
+For fixed Lobs and Tobs, larger Del_omega leads to smaller mbh and mstar, but the dependence is weak.  
 However, mbh and mstar are sensitive to c_1. For fixed Lobs and Tobs, mbh~c_1^{a} with a = -(1.2-2) and mstar~c_1^{b} with b = 0.8-1.5. 
 The default values are c_{1}=1 and Del_omega=2pi. With these choices, it is likely that the solutions are correct within factors of a few (Ryu+2020). 
 
