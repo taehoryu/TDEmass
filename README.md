@@ -77,10 +77,10 @@ The default values are c_{1}=1 and Del_omega=2pi. With these choices, it is like
 
 		The code can handle two formats (".txt" or ".csv"). The input data file should have 7 columns:
 
-			Candidate_name   Lobs    dLobs-    dLobs+    Tobs    dTobs-    dTobs+
+			Case_name   Lobs    dLobs-    dLobs+    Tobs    dTobs-    dTobs+
 
 
-		- Candidate_name : you can put any name here. This name does not affect the mass inference, but will simply be shown in solution figures (see 4. output).
+		- Case_name : you can put any name here. This name does not affect the mass inference, but will simply be shown in solution figures (see 4. output).
 
 		- Lobs  : the peak luminosity in units of erg/s. 
     
