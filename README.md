@@ -85,8 +85,8 @@ The default values are c_{1}=1 and Del_omega=2pi. With these choices, it is like
 		- Lobs  : the peak luminosity in units of erg/s. 
     
 		- dLobs-, dLobs+: These two values are determined by the uncertainties in Lobs. (IMPORTANT) Lobs - (dLobs-) and Lobs + (dLobs+) are the lower and upper limits 
-                       for Lobs, respectively. For example, if log10(Lobs)=43_{-0.1}^{+0.1}, Lobs = 10^43, dLobs- = 10^{43}-10^{43-0.1} = 2.1*10^42 and 
-                       dLobs+ = 10^{43+0.1} - 10^{43} = 2.6*10^42. This definition applies to the uncertainties for all quantities produced in the output file.
+                       for Lobs, respectively. For example, if log10(Lobs)=43_{-0.1}^{+0.1}, Lobs = 10^43, dLobs- = 10^{43}-10^{43-0.1} = 2.1 \times 10^42 and 
+                       dLobs+ = 10^{43+0.1} - 10^{43} = 2.6 \times 10^42. This definition applies to the uncertainties for all quantities produced in the output file.
 
 		- Tobs : the black body temperature at the peak luminosity in units of K.
 
