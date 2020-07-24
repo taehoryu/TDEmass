@@ -86,7 +86,7 @@ The default values are c_{1}=1 and Del_omega=2pi. With these choices, it is like
     
 		- dLobs-, dLobs+: These two values are determined by the uncertainties in Lobs. (IMPORTANT) Lobs - (dLobs-) and Lobs + (dLobs+) are the lower and upper limits 
                        for Lobs, respectively. For example, if log10(Lobs)=43_{-0.1}^{+0.1}, Lobs = 10^43, dLobs- = 10^{43}-10^{43-0.1} = 2.1*10^42 and 
-                       dLobs+ = 10^{43+0.1} - 10^{43} = 2.6*10^42. This definition applies to the uncertainties for Tobs, mbh and mstar.
+                       dLobs+ = 10^{43+0.1} - 10^{43} = 2.6*10^42. This definition applies to the uncertainties for all quantities produced in the output file.
 
 		- Tobs : the black body temperature at the peak luminosity in units of K.
 
@@ -104,7 +104,7 @@ The default values are c_{1}=1 and Del_omega=2pi. With these choices, it is like
                 The rest columns are the inferred black hole mass[mbh], its uncertainties (dmbh-,dmbh+), the inferred stellar mass [mstar], 
                 its uncertainties (dmstar-,dmstar+), t0 and its uncertainties (dt0-, dt0+) and a0 and its uncertanties (da0-,da0+). 
                 Here, t0 is the characteristic mass return time of the most tightly bound debris. 
-                The uncertainties for the masses, t0 and a0 are defined the same way as those for Lobs and Tobs.
+                The uncertainties for the masses, t0 and a0 are defined the same way as those for Lobs (see Section 5-2).
                 The name of the output file is given in the "model_info.txt"
 
 	2) solution figure on the mbh - mstar plane for each candidate
