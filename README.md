@@ -75,7 +75,7 @@ The default values are c_{1}=1 and Del_omega=2pi. With these choices, it is like
         
 	2) input data file (the name is given in "model_info.txt")
 
-		The code can handle two formats (".txt" or ".csv"). The input data file should have 11 columns:
+		The code can handle two formats (".txt" or ".csv"). The input data file should have 7 columns:
 
 			Candidate_name   Lobs    dLobs-    dLobs+    Tobs    dTobs-    dTobs+
 
