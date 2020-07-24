@@ -100,7 +100,7 @@ The default values are c_{1}=1 and Del_omega=2pi. With these choices, it is like
 
 	1) text file with the inferred black hole mass for the candidates
 
-		This output file consists of 13 columns. The first seven columns are identical to those in the input data file. 
+		This output file consists of 19 columns. The first seven columns are identical to those in the input data file. 
                 The rest columns are the inferred black hole mass[mbh], its uncertainties (dmbh-,dmbh+), the inferred stellar mass [mstar], 
                 its uncertainties (dmstar-,dmstar+), t0 and its uncertainties (dt0-, dt0+) and a0 and its uncertanties (da0-,da0+). 
                 Here, t0 is the characteristic mass return time of the most tightly bound debris. 
