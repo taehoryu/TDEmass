@@ -77,20 +77,20 @@ The default values are c_{1}=1 and Del_omega=2pi. With these choices, it is like
 
 		The code can handle two formats (".txt" or ".csv"). The input data file should have 11 columns:
 
-			Candidate_name   Lobs    Lobs_1    Lobs_2    Tobs    Tobs_1    Tobs_2
+			Candidate_name   Lobs    dLobs-    dLobs+    Tobs    dTobs-    dTobs+
 
 
 		- Candidate_name : you can put any name here. This name does not affect the mass inference, but will simply be shown in solution figures (see 4. output).
 
 		- Lobs  : the peak luminosity in units of erg/s. 
     
-		- Lobs_1, Lobs_2 : These two values are determined by the uncertainties in Lobs. (IMPORTANT) Lobs - Lobs_1 and Lobs + Lobs_2 are the lower and upper limits 
-                       for Lobs, respectively. For example, if log10(Lobs)=43_{-0.1}^{+0.1}, Lobs = 10^43, Lobs_1 = 10^{43}-10^{43-0.1} = 2.1*10^42 and 
-                       Lobs_2 = 10^{43+0.1} - 10^{43} = 2.6*10^42. This definition applies to the uncertainties for Tobs, mbh and mstar.
+		- dLobs-, dLobs+: These two values are determined by the uncertainties in Lobs. (IMPORTANT) Lobs - (dLobs-) and Lobs + (dLobs+) are the lower and upper limits 
+                       for Lobs, respectively. For example, if log10(Lobs)=43_{-0.1}^{+0.1}, Lobs = 10^43, dLobs- = 10^{43}-10^{43-0.1} = 2.1*10^42 and 
+                       dLobs+ = 10^{43+0.1} - 10^{43} = 2.6*10^42. This definition applies to the uncertainties for Tobs, mbh and mstar.
 
 		- Tobs : the black body temperature at the peak luminosity in units of K.
 
-		- Tobs_1, Tobs_2 : Same for Lobs_1 and Lobs_2. See the definitions for Lobs_1 and Lobs_2.
+		- dTobs-, dTobs+ : Same for dLobs- and dLobs+. See the definitions for dLobs- and dLobs+.
 
 		The input.csv file in "example" directory has two examples. you can take copy and paste the file and put it in "input_file" directory.
 
@@ -101,9 +101,11 @@ The default values are c_{1}=1 and Del_omega=2pi. With these choices, it is like
 	1) text file with the inferred black hole mass for the candidates
 
 		This output file consists of 13 columns. The first seven columns are identical to those in the input data file. 
-                The rest columns are the inferred black hole mass[mbh], its uncertainties [mbh_1,mbh_2], the inferred stellar mass [mstar], 
-                its uncertainties[mstar_1,mstar_2], t0 and its uncertainties (t0_1, t0_2). The uncertainties for the inferred 
-                masses are defined the same way as those for Lobs and Tobs.
+                The rest columns are the inferred black hole mass[mbh], its uncertainties (dmbh-,dmbh+), the inferred stellar mass [mstar], 
+                its uncertainties (dmstar-,dmstar+), t0 and its uncertainties (dt0-, dt0+) and a0 and its uncertanties (da0-,da0+). 
+                Here, t0 is the characteristic mass return time of the most tightly bound debris. a0 is the apocenter distance 
+                for the orbit of the most tightly bound debris. In our model, c1a0(Del Omega/ 4pi)^(1/2) is equivalent to what is called the "black body radius".
+                The uncertainties for the masses, t0 and a0 are defined the same way as those for Lobs and Tobs.
                 The name of the output file is given in the "model_info.txt"
 
 	2) solution figure on the mbh - mstar plane for each candidate

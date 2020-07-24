@@ -54,10 +54,17 @@ if(output_file_name==""):
     
 #open the output file and write a header line.
 output_file=open(figure_storage+"/"+output_file_name,"w")
-output_file.write("{:^25}".format("candidate_name")+"{:^15}".format("Lobs[erg/s]")+"{:^14}".format("Lobs_1[erg/s]")+"{:^15}".format("Lobs_2[erg/s]")+
-                  "{:^11}".format("Tobs[K]")+"{:^11}".format("Tobs_1[K]")+"{:^13}".format("Tobs_2[K]")+"{:^15}".format("mbh[10^6msol]")+
-                  "{:^17}".format("mbh_1[10^6msol]")+"{:^17}".format("mbh_2[10^6msol]")+"{:^13}".format("mstar[msol]")+"{:^15}".format("mstar_1[msol]")+
-                  "{:^15}".format("mstar_2[msol]")+"{:^11}".format("t0[days]")+"{:^11}".format("t0_1[days]")+"{:^12}".format("t0_2[days]")+"\n")
+output_file.write("{:^25}".format("candidate_name")+"{:^11}".format("Lobs")+"{:^9}".format("dLobs-")+"{:^10}".format("dLobs+")+
+"{:^12}".format("Tobs")+"{:^7}".format("dTobs-")+"{:^11}".format("dTobs+")+"{:^10}".format("mbh")+
+"{:^11}".format("dmbh-")+"{:^12}".format("dmbh+")+"{:^8}".format("mstar")+"{:^8}".format("dmstar-")+
+"{:^9}".format("dmstar+")+"{:^8}".format("t0")+"{:^8}".format("dt0-")+"{:^8}".format("dt0+")+
+"{:^9}".format("a0")+"{:^11}".format("da0-")+"{:^9}".format("da0+")+"\n")
+
+output_file.write("{:^25}".format("          ")+"{:^11}".format("[erg/s]")+"{:^10}".format("[erg/s]")+"{:^9}".format("[erg/s]")+
+"{:^12}".format("[K]")+"{:^8}".format("[K]")+"{:^9}".format("[K]")+"{:^12}".format("[10^6msol]")+
+"{:^10}".format("[10^6msol]")+"{:^13}".format("[10^6msol]")+"{:^6}".format("[msol]")+"{:^10}".format("[msol]")+
+"{:^9}".format("[msol]")+"{:^7}".format("[days]")+"{:^8}".format("[days]")+"{:^8}".format("[days]")+
+"{:^10}".format("[10^14cm]")+"{:^10}".format("[10^14cm]")+"{:^10}".format("[10^14cm]")+"\n")
 
 
 double_intersection_array=[]
@@ -130,7 +137,7 @@ for sample in range(samplesize):
             
             
         
-        t0_sol,error_t0_l,error_t0_h = module.get_t0_error(mbh_sol_array[sample],mstar_sol_array[sample])
+        a0_t0_sol = module.get_t0_a0_error(mbh_sol_array[sample],mstar_sol_array[sample],c1)
         print ("{:^25}".format(index_array[sample])," [   Solution] m_bh[10^6msol]= {0:.2g}".format(mbh_sol),
         "_{-","{0:.2g}".format(error_bh_l),"}^{+","{0:.2g}".format(error_bh_h),"{:^25}".format("},    m_star[msol] =")
         ,"{0:.2g}".format(mstar_sol),"_{-","{0:.2g}".format(error_star_l),"}^{+","{0:.2g}".format(error_star_h),"}")
@@ -138,23 +145,7 @@ for sample in range(samplesize):
         
         
         module.write_output(output_file,retv_centroid,index_array[sample],mbh_sol_array[sample],mstar_sol_array[sample],
-        Lpeak_array[0][sample],Lpeak_array[1][sample],Tpeak_array[0][sample],Tpeak_array[1][sample],t0_sol,error_t0_l,error_t0_h)
-   #     mbh_sol = mbh_sol_array[sample][0]
-   #     error_bh_l = mbh_sol_array[sample][1]
-   #     error_bh_h = mbh_sol_array[sample][2]
-   #     mstar_sol = mstar_sol_array[sample][0]
-   #     error_star_l = mstar_sol_array[sample][1]
-   #     error_star_h = mstar_sol_array[sample][2]
-   #     lpeak = Lpeak_array[0][sample]
-   #     l_error1 = Lpeak_array[1][sample][0]
-   #     l_error2 = Lpeak_array[1][sample][1]
-   #     TTpeak = Tpeak_array[0][sample]
-   #     T_error1 = Tpeak_array[1][sample][0]
-   #     T_error2 = Tpeak_array[1][sample][1]
-   #     output_file.write("{:^25}".format(index_array[sample])+"{:11.2g}".format(lpeak)+"{:14.2g}".format(l_error1)+"{:15.2g}".format(l_error2)+
-   #     "{:13.2g}".format(TTpeak)+"{:11.2g}".format(T_error1)+"{:12.2g}".format(T_error2)+"{:13.2g}".format(mbh_sol)+"{:15.2g}".format(error_bh_l)+
-   #     "{:18.2g}".format(error_bh_h)+"{:15.2g}".format(mstar_sol)+"{:15.2g}".format(error_star_l)+"{:14.2g}".format(error_star_h)+
-   #     "{:12.2g}".format(t0_sol)+"{:11.2g}".format(error_t0_l)+"{:11.2g}".format(error_t0_h)+"\n")
+        Lpeak_array[0][sample],Lpeak_array[1][sample],Tpeak_array[0][sample],Tpeak_array[1][sample],a0_t0_sol)
         solution_exist.append(0)
         #Plot the solutions on a (M_BH - M_star) grid
         pm.plotting(index_array[sample],figure_storage, double_intersection, mbh, mstar, mass_range_array,mbh_mstar_array,mbh_sol, mstar_sol,plot_format,plot_quality)
@@ -164,19 +155,10 @@ for sample in range(samplesize):
         "-",mbh_range[sample][1],"] 10^{6}msol, mstar = [", mstar_range[sample][0],"-",mstar_range[sample][1],"] msol")
         mbh_sol_array.append([-100,-100,-100])
         mstar_sol_array.append([-100,-100,-100])
+        a0_t0_sol=[[-100,-100,-100],[-100,-100,-100]]
         module.write_output(output_file,retv_centroid,index_array[sample],mbh_sol_array[sample],mstar_sol_array[sample],
-        Lpeak_array[0][sample],Lpeak_array[1][sample],Tpeak_array[0][sample],Tpeak_array[1][sample],t0_sol,error_t0_l,error_t0_h)
+        Lpeak_array[0][sample],Lpeak_array[1][sample],Tpeak_array[0][sample],Tpeak_array[1][sample],a0_t0_sol)
         solution_exist.append(1)
-   #     lpeak = Lpeak_array[0][sample]
-   #     l_error1 = Lpeak_array[1][sample][0]
-   #     l_error2 = Lpeak_array[1][sample][1]
-   #     TTpeak = Tpeak_array[0][sample]
-   #     T_error1 = Tpeak_array[1][sample][0]
-   #     T_error2 = Tpeak_array[1][sample][1]
-   #     output_file.write("{:^25}".format(index_array[sample])+"{:11.2g}".format(lpeak)+"{:14.2g}".format(l_error1)+"{:15.2g}".format(l_error2)+
-   #     "{:13.2g}".format(TTpeak)+"{:11.2g}".format(T_error1)+"{:12.2g}".format(T_error2)+"{:^21}".format(" -")+"{:^12}".format("-")+
-   #     "{:^20}".format("-")+"{:^12}".format("-")+"{:^15}".format("-")+"{:^15}".format("-")+
-   #     "{:^12}".format("-")+"{:^12}".format("-")+"{:^10}".format("-")+"\n")
 
     double_intersection_array.append(double_intersection)
     
