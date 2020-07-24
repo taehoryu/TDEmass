@@ -485,86 +485,6 @@ def solver2_LT (Lobs, Tobs, mbh,mstar,c1,del_omega):
     return retv, x1, x2
 
 
-######################################
-#   Mhost_Mbh_relation()
-#   - different M_BH - bulge correlation
-#   - which
-#        0 = McConnel&Ma2013 : M_bh - M_bulge relation
-#        1 =   : 1 -> fail to find the solutions
-######################################
-def Mhost_Mbh_relation(which, Mhost):
-  
-  if(which ==0):
-    #McConnel&Ma2013 : M_bh - M_bulge relation https://ui.adsabs.harvard.edu/abs/2013ApJ...764..184M/abstract
-    alpha = 8.46
-    alpha_scatter = 0.05
-    beta = 1.05
-    beta_scatter = 0.11
-    median, min_val, max_val = find_median_min_max(alpha,alpha_scatter,beta,beta_scatter,Mhost/1e11)
-    return median, min_val, max_val
-  elif(which==1):
-  #Magorrian+1998 : M_bh - M_bulge relation https://iopscience.iop.org/article/10.1086/300353/pdf
-    alpha =-1.79
-    alpha_scatter = 1.35
-    beta = 0.96
-    beta_scatter = 0.12
-    median, min_val, max_val = find_median_min_max(alpha,alpha_scatter,beta,beta_scatter,Mhost)
-    return median, min_val, max_val
-
-
-  elif(which == 2):
-    #Haring&Rix2004 : M_bh - M_bulge relation https://iopscience.iop.org/article/10.1086/383567/pdf
-    alpha =8.20
-    alpha_scatter = 0.10
-    beta = +1.12
-    beta_scatter = 0.06
-    median, min_val, max_val = find_median_min_max(alpha,alpha_scatter,beta,beta_scatter,Mhost/1e11)
-    return median, min_val, max_val
-  elif(which == 3):
-    #Kormendy&Ho2004 : M_bh - M_bulge relation https://arxiv.org/pdf/1304.7762.pdf
-    alpha =8.6902
-    alpha_scatter = 0.05
-    beta = +1.16
-    beta_scatter = 0.08
-    median, min_val, max_val = find_median_min_max(alpha,alpha_scatter,beta,beta_scatter,Mhost/1e11)
-    return median, min_val, max_val
-
-  elif(which == 4):
-#Reines&Marta 2015 : M_bh - M_galaxy relation (AGN) https://arxiv.org/pdf/1508.06274.pdf
-    alpha =7.45
-    alpha_scatter = 0.08
-    beta = 1.05
-    beta_scatter = 0.11
-    median, min_val, max_val = find_median_min_max(alpha,alpha_scatter,beta,beta_scatter,Mhost/1e11)
-    return median, min_val, max_val
-
-  elif(which == 5):
-#Reines&Marta 2015 : M_bh - M_galaxy relation (AGN) https://arxiv.org/pdf/1508.06274.pdf
-    alpha =8.95
-    alpha_scatter = 0.09
-    beta = 1.40
-    beta_scatter = 0.21
-    median, min_val, max_val = find_median_min_max(alpha,alpha_scatter,beta,beta_scatter,Mhost/1e11)
-    return median, min_val, max_val
-
-  elif(which == 6):
-#Savorgnan 2016 : nsph - M_BH relation (AGN) https://iopscience.iop.org/article/10.3847/0004-637X/821/2/88/pdf
-    alpha =8.15
-    alpha_scatter = 0.06
-    beta = 3.37
-    beta_scatter = 0.15
-    median, min_val, max_val = find_median_min_max2(alpha,alpha_scatter,beta,beta_scatter,Mhost)
-    return median, min_val, max_val
-  elif(which ==7):
-#Ferrarese&Ford (2005): nsph - sigma relation (AGN) https://arxiv.org/pdf/astro-ph/0411247.pdf
-    #Mbh/10^8 = (1.66+-0.24)*(sigma/200km/s)^(4.86+-0.43)
-    alpha =0.0
-    alpha_scatter = 0.0
-    beta = 0.0
-    beta_scatter = 0.0
-    median, min_val, max_val = find_median_min_max2(alpha,alpha_scatter,beta,beta_scatter,Mhost)
-    return median, min_val, max_val
- 
 
 
 ######################################
@@ -803,35 +723,43 @@ def relative_error_calc(param1, param2,val_ref1,val_ref2, mbh_sol,mstar_sol,c1,d
 
 
 ######################################
-#   get_t0_error()
-#   - calculate t0 and its error assuming there are not correlations between mbh and mstar.
+#   get_t0_a0_error()
+#   - calculate a0 and t0 and their errors assuming there are not correlations between mbh and mstar.
 ######################################
-def get_t0_error(mbh_sol_array,mstar_sol_array):
+def get_t0_a0_error(mbh_sol_array,mstar_sol_array,c1):
     mbh_sol = mbh_sol_array[0]
     error_bh_l = mbh_sol_array[1]
     error_bh_h = mbh_sol_array[2]
     mstar_sol = mstar_sol_array[0]
     error_star_l = mstar_sol_array[1]
     error_star_h = mstar_sol_array[2]
-    tp =  get_t0(mbh_sol,mstar_sol,get_rstar(mstar_sol))/60.0/60.0/24.0
+    tp = get_t0(mbh_sol,mstar_sol,get_rstar(mstar_sol))/60.0/60.0/24.0
+    a0 = c1 * get_a0(mbh_sol,mstar_sol,get_rstar(mstar_sol))/1e14
     mbh_r = np.linspace(mbh_sol - error_bh_l,mbh_sol + error_bh_h, 300)
     mstar_r = np.linspace(mstar_sol - error_star_l,mstar_sol + error_star_h,300)
     tp_error=[]
+    a0_error=[]
     for mmbh in mbh_r:
         for mmstar in mstar_r:
             rrstar = get_rstar(mmstar)
             tt0 = get_t0(mmbh,mmstar,rrstar)/60/60/24.
+            aa0 = c1 * get_a0(mmbh,mmstar,rrstar)/1e14
             tp_error.append(tt0)
-
+            a0_error.append(aa0)
     tp_l = np.amin(tp_error)
     tp_h = np.amax(tp_error)
     error_tp_l = tp - tp_l
     error_tp_h = tp_h - tp
-    return tp,error_tp_l,error_tp_h
+    a0_l = np.amin(a0_error)
+    a0_h = np.amax(a0_error)
+    error_a0_l = a0 - a0_l
+    error_a0_h = a0_h - a0
+    a0_t0_array=[[a0,error_a0_l,error_a0_h],[tp,error_tp_l,error_tp_h]]
+    return a0_t0_array
 
 
 def write_output(output_file,retv_centroid,index_array,mbh_sol_array,mstar_sol_array,
-    lpeak,lpeak_error,Tpeak,Tpeak_error,t0_sol,error_t0_l,error_t0_h):
+    lpeak,lpeak_error,Tpeak,Tpeak_error,a0_t0_array):
 
     mbh_sol = mbh_sol_array[0]
     error_bh_l = mbh_sol_array[1]
@@ -843,18 +771,27 @@ def write_output(output_file,retv_centroid,index_array,mbh_sol_array,mstar_sol_a
     l_error2 = lpeak_error[1]
     T_error1 = Tpeak_error[0]
     T_error2 = Tpeak_error[1]
+    t0_sol = a0_t0_array[1][0]
+    error_t0_l = a0_t0_array[1][1]
+    error_t0_h = a0_t0_array[1][2]
+    a0_sol  = a0_t0_array[0][0]
+    error_a0_l = a0_t0_array[0][1]
+    error_a0_h = a0_t0_array[0][2]
     if(retv_centroid==0):
-        output_file.write("{:^25}".format(index_array)+"{:11.2g}".format(lpeak)+
-        "{:14.2g}".format(l_error1)+"{:15.2g}".format(l_error2)+"{:13.2g}".format(Tpeak)+
-        "{:11.2g}".format(T_error1)+"{:12.2g}".format(T_error2)+"{:13.2g}".format(mbh_sol)+
-        "{:15.2g}".format(error_bh_l)+"{:18.2g}".format(error_bh_h)+"{:15.2g}".format(mstar_sol)+
-        "{:15.2g}".format(error_star_l)+"{:14.2g}".format(error_star_h)+
-        "{:12.2g}".format(t0_sol)+"{:11.2g}".format(error_t0_l)+"{:11.2g}".format(error_t0_h)+"\n")
+        output_file.write("{:^25}".format(index_array)+"{:9.2g}".format(lpeak)+
+        "{:10.2g}".format(l_error1)+"{:10.2g}".format(l_error2)+"{:10.2g}".format(Tpeak)+
+        "{:9.2g}".format(T_error1)+"{:9.2g}".format(T_error2)+"{:9.2g}".format(mbh_sol)+
+        "{:11.2g}".format(error_bh_l)+"{:12.2g}".format(error_bh_h)+"{:9.2g}".format(mstar_sol)+
+        "{:9.2g}".format(error_star_l)+"{:9.2g}".format(error_star_h)+
+        "{:7.2g}".format(t0_sol)+"{:8.2g}".format(error_t0_l)+"{:9.2g}".format(error_t0_h)+
+        "{:7.2g}".format(a0_sol)+"{:11.2g}".format(error_a0_l)+"{:10.2g}".format(error_a0_h)+"\n")
 
     else:
-        output_file.write("{:^25}".format(index_array)+"{:11.2g}".format(lpeak)+
-        "{:14.2g}".format(l_error1)+"{:15.2g}".format(l_error2)+"{:13.2g}".format(Tpeak)+
-        "{:11.2g}".format(T_error1)+"{:12.2g}".format(T_error2)+"{:^21}".format(" -")+"{:^12}".format("-")+
-        "{:^20}".format("-")+"{:^12}".format("-")+"{:^15}".format("-")+"{:^15}".format("-")+
-        "{:^12}".format("-")+"{:^12}".format("-")+"{:^10}".format("-")+"\n")
+        output_file.write("{:^25}".format(index_array)+"{:9.2g}".format(lpeak)+
+        "{:10.2g}".format(l_error1)+"{:10.2g}".format(l_error2)+"{:10.2g}".format(Tpeak)+
+        "{:9.2g}".format(T_error1)+"{:9.2g}".format(T_error2)+"{:^15}".format(" -")
+        +"{:^8}".format("-")+"{:^13}".format("-")+"{:^8}".format("-")
+        +"{:^9}".format("-")+"{:^9}".format("-")+
+        "{:^7}".format("-")+"{:^9}".format("-")+"{:^8}".format("-")+
+        "{:^8}".format("-")+"{:^11}".format("-")+"{:^9}".format("-")+"\n")
 
