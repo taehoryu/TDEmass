@@ -43,8 +43,8 @@ The default values are c_{1}=1 and Del_omega=2pi. With these choices, it is like
 
 	The default units are:
 
-	- Luminosity(Lobs, Lobs_1, Lobs_2) = erg/s
-	- Temperature (Tobs, Tobs_1, Tobs_2) = K
+	- Luminosity(Lobs, dLobs-, dLobs+) = erg/s
+	- Temperature (Tobs, dTobs-, dTobs+) = K
 	- black hole mass (mbh) = 10^6msol (msol : solar mass)
 	- stellar mass (mstar) = msol
  
