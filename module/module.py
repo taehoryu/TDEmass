@@ -96,7 +96,7 @@ def read_input_data(inputdata_file_name,mstar_search_range, mbh_search_range):
             data = csv.reader(csvfile, delimiter=',')
             for line in data:
                 p = line#.split()
-                if("candidate_name" not in p[0]):
+                if("case_name" not in p[0]):
                     index_array.append(p[0])
                     mstar_range.append(mstar_search_range)
                     mbh_range.append(mbh_search_range)
@@ -113,7 +113,7 @@ def read_input_data(inputdata_file_name,mstar_search_range, mbh_search_range):
             for line in data:
                 if not line.isspace():
                     p = line.split()
-                    if("candidate_name" not in p[0]):
+                    if("case_name" not in p[0]):
 
                         index_array.append(p[0])
                         mstar_range.append(mstar_search_range)
@@ -642,9 +642,10 @@ def find_mbh_mstar_from_input(input_array,sample,mbh_mstar_array,N_sampling,mbh,
 ######################################
 #   find_centroid_range()
 #   - find a central value of the ranges found using find_mbh_mstar_from_input()
+#   - the central value of mbh is defined as sum_{i,j} mbh_{i} * area_{i,j} where area_{i,j} = Delta mbh_{i} * Delta mstar_{j} and Delta mbh_{i} is the width of i_th bin in mbh grid and Delta mstar_{j} is the width of j_th bin in mstar grid.
+#   - Equivalently, the central value of mstar = sum_{i,j} mstar_{j} * area_{i,j} where area_{i,j}
 ######################################
 
-    
 def find_centroid_range(N_sampling,mbh,mstar,double_intersection):
     accu_bh = 0.0
     accu_star = 0.0
