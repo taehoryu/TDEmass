@@ -21,7 +21,7 @@
 2. Two free parameters c_1 and Del_omega
 Our model includes two free parameters, c_1 and Del_omega. c_1*a_0 is the distance from the black hole at which a significant amount of energy is dissipated by shocks. 
 Here, a_0 is the apocenter distance for the orbit of the most tightly bound debris. Del_omega is the solid angle. 
-So Del_omega * (c_1 * a_0)^2 corresponds to the surface area of the emitting region. 
+So Del_omega * (c_1 * a_0)^2 corresponds to the surface area of the emitting region. Note that c1a0(Del Omega/ 4pi)^(1/2) is equivalent to what is called the "black body radius".
 For fixed Lobs and Tobs, larger Del_omega leads to smaller mbh and mstar, but the dependence is weak.  
 However, mbh and mstar are sensitive to c_1. For fixed Lobs and Tobs, mbh \propto c_1^{a} with a = -(1.2-2) and mstar \propto c_1^{b} with b = 0.8-1.5. 
 The default values are c_{1}=1 and Del_omega=2pi. With these choices, it is likely that the solutions are correct within factors of a few (Ryu+2020). 
@@ -103,8 +103,7 @@ The default values are c_{1}=1 and Del_omega=2pi. With these choices, it is like
 		This output file consists of 13 columns. The first seven columns are identical to those in the input data file. 
                 The rest columns are the inferred black hole mass[mbh], its uncertainties (dmbh-,dmbh+), the inferred stellar mass [mstar], 
                 its uncertainties (dmstar-,dmstar+), t0 and its uncertainties (dt0-, dt0+) and a0 and its uncertanties (da0-,da0+). 
-                Here, t0 is the characteristic mass return time of the most tightly bound debris. a0 is the apocenter distance 
-                for the orbit of the most tightly bound debris. In our model, c1a0(Del Omega/ 4pi)^(1/2) is equivalent to what is called the "black body radius".
+                Here, t0 is the characteristic mass return time of the most tightly bound debris. 
                 The uncertainties for the masses, t0 and a0 are defined the same way as those for Lobs and Tobs.
                 The name of the output file is given in the "model_info.txt"
 
