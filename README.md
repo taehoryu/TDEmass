@@ -160,17 +160,17 @@
 6. Acknowledgement
 
 @ARTICLE{2020arXiv200713765R,
-       author = {{Ryu}, Taeho and {Krolik}, Julian and {Piran}, Tsvi},
-        title = "{Measuring stellar and black hole masses of tidal disruption events}",
-      journal = {arXiv e-prints},
-     keywords = {Astrophysics - High Energy Astrophysical Phenomena, Astrophysics - Astrophysics of Galaxies, Astrophysics - Solar and Stellar Astrophysics},
-         year = 2020,
-        month = jul,
-          eid = {arXiv:2007.13765},
-        pages = {arXiv:2007.13765},
-archivePrefix = {arXiv},
-       eprint = {2007.13765},
- primaryClass = {astro-ph.HE},
-       adsurl = {https://ui.adsabs.harvard.edu/abs/2020arXiv200713765R},
-      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+    author = {{Ryu}, Taeho and {Krolik}, Julian and {Piran}, Tsvi},
+    title = "{Measuring stellar and black hole masses of tidal disruption events}",
+    journal = {arXiv e-prints},
+    keywords = {Astrophysics - High Energy Astrophysical Phenomena, Astrophysics - Astrophysics of Galaxies, Astrophysics - Solar and Stellar Astrophysics},
+    year = 2020,
+    month = jul,
+    eid = {arXiv:2007.13765},
+    pages = {arXiv:2007.13765},
+    archivePrefix = {arXiv},
+    eprint = {2007.13765},
+    primaryClass = {astro-ph.HE},
+    adsurl = {https://ui.adsabs.harvard.edu/abs/2020arXiv200713765R},
+    adsnote = {Provided by the SAO/NASA Astrophysics Data System}
 }
