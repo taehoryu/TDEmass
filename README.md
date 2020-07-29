@@ -153,11 +153,13 @@
 		"c1_value" and "del Omega value" are the values of c_1 and Del_omega, respectively.
 		The error bars are determined to enclose the extreme values of the solutions. 
 
-5. Remark
+5. Issues/requests
 
     - E-mail address for issues/requests : udraeo@gmail.com
 
 6. Acknowledgement
+
+If this software contributes to your project, please acknowledge it by citing,
 
 @ARTICLE{2020arXiv200713765R,
     author = {{Ryu}, Taeho and {Krolik}, Julian and {Piran}, Tsvi},
