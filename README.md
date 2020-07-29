@@ -126,7 +126,7 @@
 
 
 
-        NOTE that examples of the input file and input data file are can be found in example directory.
+        NOTE that examples of the input file and input data file can be found in example directory (and input_file directory).
 
 4. Outputs
 
