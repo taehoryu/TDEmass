@@ -155,7 +155,7 @@
 
 5. Remark
 
-- E-mail address for inquiry : udraeo@gmail.com
+    - E-mail address for issues/requests : udraeo@gmail.com
 
 6. Acknowledgement
 
