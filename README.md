@@ -152,6 +152,9 @@
 		The name of the figure is  "c1_(c1_value)_del_omega_(del Omega value)_inferred_mass.png"
 		"c1_value" and "del Omega value" are the values of c_1 and Del_omega, respectively.
 		The error bars are determined to enclose the extreme values of the solutions. 
+        
+        
+        NOTE that the outputs for the example case in the example input file and input data file can be found in example directory.
 
 5. Issues/requests
 
