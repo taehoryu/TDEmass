@@ -215,12 +215,12 @@ def add_array_time(which, p, array,min_error):
 ######################################
 
 def get_Xi(mbh,mstar):
-    
+    mstar_max = 15.0
     Xi = (1.27 - 0.3 *(mbh)**0.242 )*((0.620 +
-    np.exp((mstar - 0.674)/0.212))/(1.0 +
-                                 0.553 *np.exp((mstar - 0.674)/0.212)))
+    np.exp((min(mstar_max,mstar) - 0.674)/0.212))/(1.0 +
+                                 0.553 *np.exp((min(mstar,mstar_max) - 0.674)/0.212)))
     return Xi
-  
+
     
 ######################################
 #   rtidal()

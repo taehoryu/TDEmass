@@ -1,2 +1,2 @@
 -current version : v.1
-
+-Jan 05 2022 : when mstar is very large, an overflow error is detected in calculating Xi (get_Xi()), although Xi asymptotes to a value. So an upper limit for mstar (mstar = 15Msol) is imposed to only calculate Xi, which should not affect the solutions.
