@@ -27,10 +27,10 @@ def read_model_input():
         c1 = 1.0
         Del_omega = 2.0 * math.pi
         N_sampling = 500
-        mstar_min = 0.1
-        mstar_max = 20.0
-        mbh_min = 0.1
-        mbh_max = 50.0
+        mstar_min = -1.0
+        mstar_max = 1e15
+        mbh_min = -1.0
+        mbh_max = 1e15
         mstar_search_range = np.zeros(2)
         mbh_search_range = np.zeros(2)
         for line in file_line:
