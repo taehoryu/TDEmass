@@ -1,0 +1,6 @@
+     candidate_name         Lobs     dLobs-    dLobs+      Tobs    dTobs-   dTobs+      mbh       dmbh-      dmbh+     mstar  dmstar-  dmstar+    t0     dt0-    dt0+     a0       da0-      da0+   
+                           [erg/s]   [erg/s]   [erg/s]     [K]       [K]      [K]    [10^6msol] [10^6msol] [10^6msol]  [msol]  [msol]   [msol]  [days]  [days]  [days] [10^14cm] [10^14cm] [10^14cm] 
+        AT2018lna          3.5e+44   3.8e+43   6.1e+43   3.9e+04  2.6e+03  2.8e+03       -          -          -         -        -        -       -       -       -       -         -         -    
+        AT2019dsg          2.9e+44   3.1e+43   3.5e+43   3.9e+04  1.8e+03  1.8e+03       -          -          -         -        -        -       -       -       -       -         -         -    
+        AT2019meg          2.3e+44   1.5e+43   2.2e+43   2.8e+04  6.3e+02  6.4e+02      1.8       0.52        0.28       16      5.6       24     57      17       29     11        3.2         4
+  ASASSN-19dj/AT2019azh    6.1e+44   1.7e+43   1.7e+43     5e+04    3e+03    3e+03       -          -          -         -        -        -       -       -       -       -         -         -    

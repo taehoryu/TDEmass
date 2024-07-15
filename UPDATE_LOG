@@ -1,3 +1,4 @@
 -current version : v.1
 -Jan 05 2022 : when mstar is very large, an overflow error is detected in calculating Xi (get_Xi()), although Xi asymptotes to a value. So an upper limit for mstar (mstar = 15Msol) is imposed to only calculate Xi, which should not affect the solutions.
 -Jan 05 2022 : There was also extra upper and lower limits of of the ranges of mstar and mbh within which the code find a solution in module.py was removed. So users can change the range in model_info.txt.
+-July 15 2024: The code is updated to account for the cooling time. 

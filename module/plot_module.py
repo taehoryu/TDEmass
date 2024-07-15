@@ -6,8 +6,9 @@ import matplotlib.pyplot as plt
 import matplotlib
 #matplotlib.use('Agg')
 import matplotlib.colors as colors
-import matplotlib.cm as cm
-from matplotlib.offsetbox import TextArea, VPacker, AnnotationBbox
+import matplotlib.cm
+#import matplotlib.cm as cm
+#from matplotlib.offsetbox import TextArea, VPacker, AnnotationBbox
 import errno
 import math
 from matplotlib.ticker import NullFormatter  # useful for `logit` scale
@@ -15,7 +16,7 @@ import itertools
 from matplotlib import rcParams
 import module
 
-def plotting(index_label,figure_storage, plot_array, mbh, mstar, mass_range_array,mbh_mstar_array,mean_bh, mean_star,plot_format,plot_quality):
+def plotting(index_label, figure_storage, plot_array, mbh, mstar, mass_range_array, mbh_mstar_array, mean_bh, mean_star, plot_format, plot_quality, include_tcool, hr, c1, del_omega):
     matplotlib.rcParams.update({'font.size': 20})
     marker = itertools.cycle(('<', 'X', '^', 'o', '*','>','p','s'))
     colors=["blue", "red", "green", "magenta","orange","grey"]
@@ -29,15 +30,17 @@ def plotting(index_label,figure_storage, plot_array, mbh, mstar, mass_range_arra
             index_label2 = index_label2 + "_"
         else:
             index_label2 = index_label2 + letter
-
-    filename = index_label2+plot_format
+    
+    if(include_tcool==1):
+        index_label2 += "_with_cooling_hr_%3.3f"%(hr)
+    filename = index_label2 + plot_format
     filename1 = os.path.join(figure_storage, filename)
     XBH, YSTAR = np.meshgrid(mbh, mstar)
     
     for count in range(2):
         if(len(mbh_mstar_array[count][0])>0):
             ax.contourf(XBH,YSTAR,mass_range_array[count],colors = colors[count],alpha=0.3)
-    ax.scatter(mean_bh, mean_star)
+    ax.scatter(mean_bh, mean_star,zorder=99, color="magenta", marker= "X", s= 200)
     plt.rcParams['hatch.color'] = "white"
     masked = np.ma.masked_where(plot_array!=2,plot_array)
     ax.contourf(XBH,YSTAR,masked,colors = "green",alpha=1.0,hatches=['x'])
@@ -49,7 +52,16 @@ def plotting(index_label,figure_storage, plot_array, mbh, mstar, mass_range_arra
       
     xtick_array= get_tick_array(mbh[0],mbh[-1],"x")
     ytick_array= get_tick_array(mstar[0],mstar[-1],"y")
-      
+    
+    ax.text(0.65,0.18, r"$c_{1}$            = %4.1f"%(c1), transform = ax.transAxes, fontsize = 12)
+    ax.text(0.65,0.13, r"$\Delta \Omega$           = %4.1f $\pi$"%(del_omega/np.pi), transform = ax.transAxes, fontsize = 12)
+
+    if(include_tcool==1):
+        ax.text(0.65,0.08, "Cooling?  : Yes", transform = ax.transAxes, fontsize = 12)
+        ax.text(0.65,0.03, "$h/r$           = %4.2f"%(hr), transform = ax.transAxes, fontsize = 12)
+    else:
+        ax.text(0.65,0.1, "Cooling?  : Yes", transform = ax.transAxes, fontsize = 12)
+
     ax.set_xticks(xtick_array)
     ax.xaxis.set_major_formatter(plt.FuncFormatter(format_func))
 
@@ -74,13 +86,13 @@ def plotting(index_label,figure_storage, plot_array, mbh, mstar, mass_range_arra
 
 
 
-def plot_double_intersection(figure_storage,index_array,plot_array,mass_range_array,plot_format,plot_quality,c1,del_omega,samplesize,mbh_sol_array,mstar_sol_array,solution_exist):
+def plot_double_intersection(figure_storage,index_array,plot_array,mass_range_array,plot_format,plot_quality,c1,del_omega,samplesize,mbh_sol_array,mstar_sol_array,solution_exist, include_tcool, hr):
     marker = itertools.cycle(('<', 'X', '^', 'o', '*','>','p','s'))
     colors=["blue", "red", "green", "magenta","orange","grey"]
     matplotlib.rcParams.update({'font.size': 20})
     temp_array=[[[],[]],[[],[]]]
     for sample in range(samplesize):
-        if(solution_exist[sample]==0):
+        if(solution_exist[sample]==1):
             mbh_lo = mbh_sol_array[sample][0] - mbh_sol_array[sample][1]
             mbh_hi = mbh_sol_array[sample][2] + mbh_sol_array[sample][0]
             mstar_lo = mstar_sol_array[sample][0] - mstar_sol_array[sample][1]
@@ -102,7 +114,10 @@ def plot_double_intersection(figure_storage,index_array,plot_array,mass_range_ar
     cmap = "jet"
     fig, ax = plt.subplots()
     int_count = 2
-    filename = "c1_"+str(c1)[0:5]+"_del_omega_"+str(del_omega/math.pi)[0:3]+"_inferred_mass"+plot_format
+    filename = "c1_"+str(c1)[0:5]+"_del_omega_"+str(del_omega/math.pi)[0:3]+"_inferred_mass"
+    if(include_tcool==1):
+        filename +="_with_cooling_hr_%3.3f"%(hr)
+    filename += plot_format
     filename1 = os.path.join(figure_storage, filename)
     good_sample_size = 0
     offset=[]
@@ -132,7 +147,7 @@ def plot_double_intersection(figure_storage,index_array,plot_array,mass_range_ar
         error_star_l = mstar_sol_array[sample][1]
         error_star_h = mstar_sol_array[sample][2]
         mean_bh = mbh_sol_array[sample][0]
-        ccmap = matplotlib.cm.get_cmap(cmap)
+        ccmap = plt.get_cmap(cmap)
         color = ccmap((offset[sample]-vmin)/(vmax-vmin))
         if (mean_bh>0.0):
             markers = next(marker)

@@ -1,2 +1,4 @@
 case_name	             Lobs[erg/s]     dLobs-[erg/s]     dLobs+[erg/s]     Tobs[K]    dTobs-[K]     dTobs+[K]
-ASASSN-18pg/AT2018dyb	      1.12E+44	       4.91E+43	         4.63E+43	 25000	       5000	    5000
+AT2020zso	               1.0E+44	       5E+42	         5E+42	          20000	       5000	    5000
+AT2022bdl                      7.76e43         1.6e43           2.0e43            29100        1900         1900
+AT2022bdl                      3.02e43         7.3e42           9.6e42            26400        2300         2300
