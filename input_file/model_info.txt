@@ -4,5 +4,5 @@ c1                         1.0
 del_omega                  2.0                 # in units of pi
 mstar_range                0.1   40            # min, max in units of msol
 mbh_range                  0.1   50.0          # min, max in units of 10^{6}msol
-include_tcool_tdyn_ratio   1                   # if include_tcool_tdyn_ratio = 0, the luminosity is limited by the Eddington luminosity if t_cool / t_dyn < 1.0
+include_tcool_tdyn_ratio   0                   # if include_tcool_tdyn_ratio = 0, the luminosity is limited by the Eddington luminosity if t_cool / t_dyn < 1.0 (still testing)
 aspect_ratio               0.2                 # aspect ratio used to calculate t_cool. This is only used when include_tcool_tdyn_ratio=1
