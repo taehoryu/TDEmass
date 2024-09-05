@@ -26,8 +26,12 @@
         where R_star is the stellar radius and r_t is the order of magnitude estimate for the tidal radius, i.e., (mbh/mstar)^(1/3) R_star 
         (Ryu+2020, Arxiv 2001:03501).  \Xi(mbh,mstar) is nonlinear, but analytic function of mbh and mstar.  Its nonlinearity is 
         what requires numerical solutions of these equations.
+
+        The code has been updated recently to incorporate the cooling effect discussed in Krolik, Piran, Ryu (2024) arXiv:2409.02894.
+        Two more parameters have been added (aspect ratio - h_r and the fraction of the bound mass within the semimajor axis of the most tightly
+        bound debris at peak mass return time). If include_tcool_tdyn_ratio = 1, the code will instead solve for Equations 17 and 19 in Krolik, Piran, Ryu (2024). 
    
-   2) Two unspecified parameters c_1 and Del_omega
+   3) Two unspecified parameters c_1 and Del_omega
    
         Our model includes two unspecified parameters, c_1 and Del_omega. c_1*a_0 is the distance from the black hole at which a significant 
         amount of energy is dissipated by shocks. Here, a_0 is the apocenter distance for the orbit of the most tightly bound debris. 
@@ -40,7 +44,7 @@
         c1=1 and del_omega=2 (default values in the code).
   
   
-    3) Code description
+    4) Code description
     
         The code solves the equations using the following algorithm:
 
@@ -69,7 +73,7 @@
         - stellar mass (mstar) = msol
 
 
-2. Download and run
+1. Download and run
 
 	To download, clone the git repository using HTTP access :
 
@@ -82,7 +86,7 @@
 	The code has three source dependencies : scipy, numpy and matplotlib
 
 
-3. Inputs
+2. Inputs
 
     Before running, two input files must be placed in "input_file" directory:  
  
@@ -102,6 +106,13 @@
 
         - mstar_range : These two define the range of stellar mass, in units of solar mass, within which the solver
                              tries to find the solution.
+
+        - include_tcool_tdyn_ratio : integer value to decide whether the luminosity is limited by the Eddington luminosity if the cooling time is shorter than the dynamical time (1: yes, 2: no)
+
+        - f                        : the fraction of the bound mass within the semimajor axis of the most tightly bound debris at peak mass return time (default value = 0.15).
+        -                            This is only used when include_tcool_tdyn_ratio=1                
+
+        - aspect_ratio             : the aspect ratio of the debris disk used to calculate the cooling time (default value = 0.5). This is only used when include_tcool_tdyn_ratio=1
 
         
 	2) input data file (the name is given in "model_info.txt")
@@ -158,7 +169,7 @@
 
 5. Issues/requests
 
-    - E-mail address for issues/requests : udraeo@gmail.com
+    - E-mail address for issues/requests : udraeo@gmail.com or Taeho.Ryu@colorado.edu
 
 6. Acknowledgement
 
