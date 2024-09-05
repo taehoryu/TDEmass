@@ -109,8 +109,7 @@
 
         - include_tcool_tdyn_ratio : integer value to decide whether the luminosity is limited by the Eddington luminosity if the cooling time is shorter than the dynamical time (1: yes, 2: no)
 
-        - f                        : the fraction of the bound mass within the semimajor axis of the most tightly bound debris at peak mass return time (default value = 0.15).
-        -                            This is only used when include_tcool_tdyn_ratio=1                
+        - f                        : the fraction of the bound mass within the semimajor axis of the most tightly bound debris at peak mass return time (default value = 0.15). This is only used when include_tcool_tdyn_ratio=1                
 
         - aspect_ratio             : the aspect ratio of the debris disk used to calculate the cooling time (default value = 0.5). This is only used when include_tcool_tdyn_ratio=1
 
