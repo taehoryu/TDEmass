@@ -1,8 +1,9 @@
-inputdata_file_name        input_coverage_error.csv           # name of the input file with the spectral data for the candidates to be read
+inputdata_file_name        input_coverage10.csv           # name of the input file with the spectral data for the candidates to be read
 output_file_name           example.out         # name of the output file with the inferred masses. if "-" is given, the output file name is given with the candidate names. If there is one candidate in the input file, output_file_name = "candidate-name.txt". If there are more than two, output_file_name = "first-candidate-name_last-candidate-name.txt"
 c1                         1.0		
 del_omega                  2.0                 # in units of pi
-mstar_range                0.1   40            # min, max in units of msol
+mstar_range                0.1   30            # min, max in units of msol
 mbh_range                  0.1   50.0          # min, max in units of 10^{6}msol
 include_tcool_tdyn_ratio   1                   # if include_tcool_tdyn_ratio = 0, the luminosity is limited by the Eddington luminosity if t_cool / t_dyn < 1.0
-aspect_ratio               0.2                 # aspect ratio used to calculate t_cool. This is only used when include_tcool_tdyn_ratio=1
+f                          0.15                # fraction of the bound mass within the semimajor axis of the most tightly bound debris at peak mass return time
+aspect_ratio               0.5                 # aspect ratio used to calculate t_cool. This is only used when include_tcool_tdyn_ratio=1

@@ -16,7 +16,7 @@ import itertools
 from matplotlib import rcParams
 import module
 
-def plotting(index_label, figure_storage, plot_array, mbh, mstar, mass_range_array, mbh_mstar_array, mean_bh, mean_star, plot_format, plot_quality, include_tcool, hr, c1, del_omega):
+def plotting(index_label, figure_storage, plot_array, mbh, mstar, mass_range_array, mbh_mstar_array, mean_bh, mean_star, plot_format, plot_quality, include_tcool, hr, f, c1, del_omega):
     matplotlib.rcParams.update({'font.size': 20})
     marker = itertools.cycle(('<', 'X', '^', 'o', '*','>','p','s'))
     colors=["blue", "red", "green", "magenta","orange","grey"]
@@ -53,14 +53,15 @@ def plotting(index_label, figure_storage, plot_array, mbh, mstar, mass_range_arr
     xtick_array= get_tick_array(mbh[0],mbh[-1],"x")
     ytick_array= get_tick_array(mstar[0],mstar[-1],"y")
     
-    ax.text(0.65,0.18, r"$c_{1}$            = %4.1f"%(c1), transform = ax.transAxes, fontsize = 12)
-    ax.text(0.65,0.13, r"$\Delta \Omega$           = %4.1f $\pi$"%(del_omega/np.pi), transform = ax.transAxes, fontsize = 12)
+    ax.text(0.65,0.23, r"$c_{1}$            = %4.1f"%(c1), transform = ax.transAxes, fontsize = 12)
+    ax.text(0.65,0.18, r"$\Delta \Omega$           = %4.1f $\pi$"%(del_omega/np.pi), transform = ax.transAxes, fontsize = 12)
 
     if(include_tcool==1):
-        ax.text(0.65,0.08, "Cooling?  : Yes", transform = ax.transAxes, fontsize = 12)
+        ax.text(0.65,0.13, "Cooling?  = Yes", transform = ax.transAxes, fontsize = 12)
+        ax.text(0.65,0.08, "$f$              = %4.2f"%(f), transform = ax.transAxes, fontsize = 12)
         ax.text(0.65,0.03, "$h/r$           = %4.2f"%(hr), transform = ax.transAxes, fontsize = 12)
     else:
-        ax.text(0.65,0.1, "Cooling?  : Yes", transform = ax.transAxes, fontsize = 12)
+        ax.text(0.65,0.13, "Cooling?  = No", transform = ax.transAxes, fontsize = 12)
 
     ax.set_xticks(xtick_array)
     ax.xaxis.set_major_formatter(plt.FuncFormatter(format_func))
@@ -86,7 +87,7 @@ def plotting(index_label, figure_storage, plot_array, mbh, mstar, mass_range_arr
 
 
 
-def plot_double_intersection(figure_storage,index_array,plot_array,mass_range_array,plot_format,plot_quality,c1,del_omega,samplesize,mbh_sol_array,mstar_sol_array,solution_exist, include_tcool, hr):
+def plot_double_intersection(figure_storage, index_array, plot_array, mass_range_array, mbh_search_range, mstar_search_range, plot_format,plot_quality,c1,del_omega,samplesize,mbh_sol_array,mstar_sol_array,solution_exist, include_tcool, hr):
     marker = itertools.cycle(('<', 'X', '^', 'o', '*','>','p','s'))
     colors=["blue", "red", "green", "magenta","orange","grey"]
     matplotlib.rcParams.update({'font.size': 20})
@@ -135,7 +136,7 @@ def plot_double_intersection(figure_storage,index_array,plot_array,mass_range_ar
     max_bh = -1e100
     max_star = -1e100
     for sample in range(samplesize):
-      if(solution_exist[sample]==0):
+      if(solution_exist[sample]==1):
         mean_bh = 0.0
         mean_star = 0.0
         area_total = 0.0
@@ -162,8 +163,10 @@ def plot_double_intersection(figure_storage,index_array,plot_array,mass_range_ar
     ax.set_xscale("log")
     ax.set_yscale("log")
     
-    ax.set_ylim(min_star*0.8,max_star*1.2)
-    ax.set_xlim(min_bh*0.8,max_bh*1.2)
+#    ax.set_ylim(min_star*0.8,max_star*1.2)
+#    ax.set_xlim(min_bh*0.8,max_bh*1.2)
+    ax.set_xlim(mbh_search_range[0],mbh_search_range[1])
+    ax.set_ylim(mstar_search_range[0],mstar_search_range[1])
     xtick_array= get_tick_array(min_star,max_star,"x")
     ytick_array= get_tick_array(min_bh,max_bh,"y")
 

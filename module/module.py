@@ -56,9 +56,12 @@ def read_model_input():
                     mbh_search_range[1] = min(mbh_max, float(p[2]))
                 if(p[0]=="include_tcool_tdyn_ratio"):
                     include_tcool_tdyn_ratio = int(p[1])
+                if(p[0]=="f"):
+                    f = float(p[1])
                 if(p[0]=="aspect_ratio"):
                     aspect_ratio = float(p[1])
-        return inputdata_file_name, output_file_name, c1, Del_omega, mstar_search_range, mbh_search_range, include_tcool_tdyn_ratio, aspect_ratio
+                
+        return inputdata_file_name, output_file_name, c1, Del_omega, mstar_search_range, mbh_search_range, include_tcool_tdyn_ratio, f, aspect_ratio
 
 
 ######################################
@@ -251,7 +254,7 @@ def epsilon(mbh, mstar, rstar):
 #   - a routine to calculate the apocenter distance of orbit for the most tightly bound debris with energy Xi * epsilon in cgs unit
 ######################################
 
-def get_a0(mbh,mstar,rstar):
+def get_a0(mbh, mstar, rstar):
     energy = get_Xi(mbh, mstar) * epsilon(mbh, mstar, rstar)
     return constant.unit_G * (mbh * 1e6 * constant.unit_msun)/ energy #in cm
 
@@ -267,7 +270,11 @@ def get_t0(mbh, mstar, rstar):
     if(np.isfinite(t0)):
         return t0
     else:
-        print ("Nan in get_t0(): mbh %3.2e mstar %3.2e rstar %3.2e a0 %3.2e"%(mbh, mstar, rstar, a0))
+        print ("Nan in get_t0()")
+        print ("mbh", mbh)
+        print ("mstar", mstar)
+        print ("rstar", rstar)
+        print ("a0", a0)
         exit()
 
 
@@ -333,19 +340,20 @@ def get_Tmax(mbh, mstar, rstar, c1, del_omega):
 
 
 ######################################
-#   get_tdiff_to_tdyn()
+#   get_tcool_to_tdyn()
 #   - a routine to calculate the ratio of the cooling time to the dynamical time (Equation 8 in https://arxiv.org/abs/2007.13765)
 ######################################
-def get_tdiff_to_tdyn(mbh, mstar, rstar, c1, h_r, include_tcool):
+def get_tcool_to_tdyn(mbh, mstar, rstar, c1, h_r, f, include_tcool):
     if(mbh ==0.0 or include_tcool==0):
         return 0.0
     kappa = 0.34 # Thomson opacity (cm^2 g^-1)
-    a0 = get_a0(mbh,mstar,rstar)
-    area = 2.0 * np.pi * ( c1 * a0 )**2
-    tau = kappa * (mstar * constant.unit_msun / 2.0) / area
-    tdiff = tau * (h_r) * c1 * a0 / constant.unit_clight
+    r_apo = get_a0(mbh,mstar,rstar) # apocenter distance of the most bound debris
+    semi = r_apo / 2.0     #semimajor axis of the most bound debris
+    area = np.pi * ( c1 * semi )**2 # emitting area
+    tau = kappa * (f * mstar * constant.unit_msun / 2.0) / area / 2.0  # the characteristic vertical optical depth to the midplane of a circular disk with radius ∼ semi. The first "/2.0" comes from the fact that we consider only the bound mass = mstar / 2. The second "/2.0" comes from the fact that the optical depth was integrated to the mid-plane.
+    tcool = tau * (h_r) * c1 * semi / constant.unit_clight
     tdyn = get_t0(mbh,mstar,rstar)
-    return tdiff / tdyn
+    return tcool / tdyn
 
 
 ######################################
@@ -355,12 +363,16 @@ def get_tdiff_to_tdyn(mbh, mstar, rstar, c1, h_r, include_tcool):
 #   - the time-dependence will be included
 ######################################
 
-def get_Lobs(mbh, mstar, rstar, c1, t_obs, include_tcool, h_r):
-    Lmax = get_Lmax(mbh,mstar,rstar,c1)
+def get_Lobs(mbh, mstar, rstar, c1, t_obs, h_r, f, include_tcool):
+    Lmax = get_Lmax(mbh, mstar, rstar, c1) # this corresponds to L_diss,peak/2 of Equation 16 in Follow-the-mass paper
     tpeak = t_obs#get_tpeak(mbh,mstar,rstar)
-    Lobs = Lmax  * (t_obs/tpeak)**(-5.0/3.0)
-    tratio = get_tdiff_to_tdyn(mbh, mstar, rstar, c1, h_r, include_tcool)
-    return Lobs / (1.0 + tratio)
+    Lobs = Lmax * (t_obs/tpeak)**(-5.0/3.0)
+    tratio = get_tcool_to_tdyn(mbh, mstar, rstar, c1, h_r, f, include_tcool)
+    if(include_tcool==1):
+        factor = 2.0 / (1.0 + tratio)
+    else:
+        factor = 1.0
+    return Lobs * factor # If include_tcool = 0, this corresponds to Lmax of Equation 6 in TDEmass paper. If include_tcool = 1, this corresponds to L_rad,peak of Equation 17 in Follow-the-mass paper.
 
 ######################################
 #   get_Tobs()
@@ -369,10 +381,12 @@ def get_Lobs(mbh, mstar, rstar, c1, t_obs, include_tcool, h_r):
 #   - the time-dependence will be included
 ######################################
 
-def get_Tobs(mbh, mstar, rstar, c1, del_omega, t_obs, include_tcool, h_r):
-  Lobs = get_Lobs(mbh, mstar, rstar, c1, t_obs, include_tcool, h_r)
-  a0 = get_a0(mbh, mstar, rstar)
+def get_Tobs(mbh, mstar, rstar, c1, del_omega, t_obs, h_r, f, include_tcool):
+  Lobs = get_Lobs(mbh, mstar, rstar, c1, t_obs, h_r, f, include_tcool)
+  a0 = get_a0(mbh, mstar, rstar) #apocenter distance
   factor_denom = del_omega * constant.BS_constant * c1**2 * a0**2
+  if(include_tcool ==1):
+      factor_denom *= (1.0 + 2.0 * h_r) / 4.0
   Tmax = (Lobs / factor_denom )**(1.0/4.0)
   return Tmax
 
@@ -399,19 +413,19 @@ def get_mbh_mstar_from_L_T(Lobs, Tobs, mbh, mstar, rstar, c1, t_obs, delta_t, de
 #   - It was found that this method does not give an accurate solution. So currently not being used.
 ######################################
 
-def get_mbh_mstar_from_L_T2(Lobs, Tobs, mbh, mstar, rstar, c1, t_obs, delta_t, del_omega, includ_tcool, h_r):
+def get_mbh_mstar_from_L_T2(Lobs, Tobs, mbh, mstar, rstar, c1, t_obs, delta_t, del_omega, includ_tcool, h_r, f):
     Xi = get_Xi(mbh, mstar)
     tpeak = get_tpeak(mbh, mstar, rstar)
     kappa = 0.34 # Thomson opacity (cm^2 g^-1)
-    tdiff_tdyn = get_tdiff_to_tdyn(mbh, mstar, get_rstar(mstar), c1, h_r, includ_tcool)
+    tdiff_tdyn = get_tcool_to_tdyn(mbh, mstar, get_rstar(mstar), c1, h_r, f, includ_tcool)
     if(tdiff_tdyn < 1.0):
         mbh_next = 1.097091710461842 * (Tobs/10**4.5)**(-8.0/3.0)* (c1/0.5)**-2 * Xi **3* (del_omega/4.0/math.pi)**(-2.0/3.0) *(1.0 + tdiff_tdyn)**(-2.0/3.0) #using Tobs
-        tdiff_tdyn = get_tdiff_to_tdyn(mbh_next, mstar, get_rstar(mstar), c1, h_r, includ_tcool)
+        tdiff_tdyn = get_tcool_to_tdyn(mbh_next, mstar, get_rstar(mstar), c1, h_r, f, includ_tcool)
         Xi = get_Xi(mbh_next,mstar)
         mstar_next = ((Lobs / 4.28579e43) * mbh_next**(1./6.0) * Xi**-2.5 * c1**1 * ( 1 + tdiff_tdyn))**(9/4) #using Lobs
     else:
         mbh_next = ((Lobs / 4.28579e43)**-1 * mstar **(4/9) * Xi**2.5 / c1 / ( 1 + tdiff_tdyn))**(6.0) #using Lobs
-        tdiff_tdyn = get_tdiff_to_tdyn(mbh_next, mstar, get_rstar(mstar), c1, h_r, includ_tcool)
+        tdiff_tdyn = get_tcool_to_tdyn(mbh_next, mstar, get_rstar(mstar), c1, h_r, f, includ_tcool)
         Xi = get_Xi(mbh_next,mstar)
         T_tilde = (Tobs/36653.97415980464) * Xi ** (-1.125) * c1 **(3.0/4.0) * del_omega**(1.0/4.0) * mbh_next**0.375
         T_tilde = T_tilde**-4 - 1.0
@@ -484,7 +498,7 @@ def solver1_LT (Lobs, Tobs, mbh, mstar, c1, del_omega):
 #   - retv : 0 -> found converging solutions
 #          : 1 -> fail to find the solutions
 ######################################
-def solver2_LT (Lobs, Tobs, mbh,mstar,c1,del_omega, include_tcool, h_r):
+def solver2_LT (Lobs, Tobs, mbh,mstar,c1,del_omega, h_r, f, include_tcool):
     x1 = mbh
     x2 = mstar
     error = 1.0
@@ -503,9 +517,9 @@ def solver2_LT (Lobs, Tobs, mbh,mstar,c1,del_omega, include_tcool, h_r):
         delta_t = 0.0
         x = (t_obs - delta_t)/t_peak
         
-        f1 = (Lobs - get_Lobs(x1, x2, rstar, c1, t_obs, include_tcool, h_r))#/10**44
-        f2 = (Tobs - get_Tobs(x1, x2, rstar, c1, del_omega, t_obs, include_tcool, h_r))#/10**4.5
-        jac = get_jacobian_LT(x1, x2, rstar, c1, del_omega, x, include_tcool, h_r)
+        f1 = (Lobs - get_Lobs(x1, x2, rstar, c1, t_obs, h_r, f, include_tcool))#/10**44
+        f2 = (Tobs - get_Tobs(x1, x2, rstar, c1, del_omega, t_obs, h_r, f, include_tcool))#/10**4.5
+        jac = get_jacobian_LT(x1, x2, rstar, c1, del_omega, x, h_r, f, include_tcool)
         det = jac[0][0] * jac[1][1] - jac[1][0] * jac[0][1]
         dx1 = 1.0/det * ( jac[1][1] * f1 - jac[0][1] * f2) * JAC_FAC
         dx2 = 1.0/det * (-jac[1][0] * f1 + jac[0][0] * f2) * JAC_FAC
@@ -670,7 +684,7 @@ def dT_dm2(mbh, mstar, c1, del_omega, include_tcool, hr):
 #   get_jacobian_LT()
 #   - a routine to calculate jacobian matrix used in solver2_LT()
 ######################################
-def get_jacobian_LT(mbh, mstar, rstar, c1,del_omega, x, include_tcool, h_r):
+def get_jacobian_LT(mbh, mstar, rstar, c1,del_omega, x, h_r, f, include_tcool):
     jac = np.zeros((2,2))
 #    L_bh, dL_dbh, L_mstar, dL_dmstar = dL_dm(mbh, mstar)
 #    T_bh, dT_dbh, T_mstar, dT_dmstar = dT_dm(mbh, mstar)
@@ -692,7 +706,7 @@ def get_jacobian_LT(mbh, mstar, rstar, c1,del_omega, x, include_tcool, h_r):
 #   - the central value of the ranges is used for a first guess in solver1_LT()
 #   - If solver1_LT and solver2_LT fail, the central value and the uncertainties found in this routine are provided
 ######################################
-def find_mbh_mstar_from_input(input_array,sample,mbh_mstar_array,N_sampling,mbh,mstar,c1,del_omega,input_count,mass_range_array,input_kind,double_intersection, include_tcool, h_r):
+def find_mbh_mstar_from_input(input_array,sample,mbh_mstar_array,N_sampling,mbh,mstar,c1,del_omega,input_count,mass_range_array,input_kind,double_intersection, h_r, f, include_tcool):
     LPEAK = 0
     TPEAK = 1
     RBB = 2
@@ -720,9 +734,9 @@ def find_mbh_mstar_from_input(input_array,sample,mbh_mstar_array,N_sampling,mbh,
                 t_obs = get_tpeak(bh,star,rstar)
                 t0 = get_t0(bh,star,rstar)
                 if(input_kind==LPEAK):
-                    peak_value[i_star,i_bh] = get_Lobs(bh, star, rstar, c1, t_obs, include_tcool, h_r)
+                    peak_value[i_star,i_bh] = get_Lobs(bh, star, rstar, c1, t_obs, h_r, f, include_tcool)
                 elif(input_kind ==TPEAK):
-                    peak_value[i_star,i_bh] = get_Tobs(bh,star, rstar,c1, del_omega, t_obs, include_tcool, h_r)
+                    peak_value[i_star,i_bh] = get_Tobs(bh,star, rstar,c1, del_omega, t_obs, h_r, f,  include_tcool)
 #                elif(input_kind==LINEWIDTH):
 #                    peak_value[i_star,i_bh] = get_v(bh,star,rstar,c1)/1e5
 #                elif(input_kind==MBH):
@@ -824,7 +838,7 @@ def find_centroid_range(N_sampling, mbh, mstar, double_intersection):
 #   relative_error_calc()
 #   - calculate the relative error
 ######################################
-def relative_error_calc(param1, param2, val_ref1, val_ref2, mbh_sol, mstar_sol, c1, del_omega, include_tcool, h_r):
+def relative_error_calc(param1, param2, val_ref1, val_ref2, mbh_sol, mstar_sol, c1, del_omega, h_r, f,  include_tcool):
     param = [param1,param2]
     val_ref = [val_ref1,val_ref2]
     LPEAK = 0
@@ -833,10 +847,10 @@ def relative_error_calc(param1, param2, val_ref1, val_ref2, mbh_sol, mstar_sol, 
     error = [[],[]]
     for i in range(len(param)):
         if(param[i]==LPEAK):
-            val = get_Lobs(mbh_sol, mstar_sol, get_rstar(mstar_sol), c1, 2.0, include_tcool, h_r)
+            val = get_Lobs(mbh_sol, mstar_sol, get_rstar(mstar_sol), c1, 2.0, h_r, f, include_tcool)
             error[LPEAK] = np.abs((val_ref[LPEAK]-val)/val_ref[LPEAK])
         elif(param[i]==TPEAK):
-            val = get_Tobs(mbh_sol,mstar_sol, get_rstar(mstar_sol), c1, del_omega, 2.0, include_tcool, h_r)
+            val = get_Tobs(mbh_sol,mstar_sol, get_rstar(mstar_sol), c1, del_omega, 2.0, h_r, f, include_tcool)
             error[TPEAK] = np.abs((val_ref[TPEAK]-val)/val_ref[TPEAK])
 
     return error[LPEAK],error[TPEAK]
