@@ -32,11 +32,8 @@ tot_input_variable_count = 4
 check_input = [0,0,0,0,0,0,0]
 ####################################################
 
-
-
 #Read key input parameter, input file name and output file name
-inputdata_file_name, output_file_name, c1, del_omega,mstar_search_range,mbh_search_range, include_tcool, h_r  = module.read_model_input()
-
+inputdata_file_name, output_file_name, c1, del_omega, mstar_search_range, mbh_search_range, include_tcool, f, h_r  = module.read_model_input()
 
 #Read input data
 index_array, mstar_range, mbh_range, Lpeak_array, Tpeak_array, samplesize = module.read_input_data(inputdata_file_name, mstar_search_range, mbh_search_range)
@@ -47,7 +44,8 @@ print ('{:^20} {:.2f}'.format("        Delta omega[pi] = ", del_omega/math.pi))
 print ('{:^20} {:d}'.format("      Total sample size = ", samplesize))
 if( include_tcool==1):
     print ('{:^20}'.format("Include cooling effect? = yes"))
-    print ("           Aspect ratio = %5.3e"%(h_r))
+    print ("Bound mass fraction within a0 = %5.3e"%(f))
+    print ("                 Aspect ratio = %5.3e"%(h_r))
 
 else:
     print ('{:^20}'.format("Include cooling effect? = no"))
@@ -104,13 +102,13 @@ for sample in range(samplesize):
     #First find ranges of mbh and mstar which reproduces Lobs and Tobs within their uncertainties
     input_variable_count += 1
     double_intersection, mbh_mstar_array, mass_range_array, nan, t0_range=module.find_mbh_mstar_from_input(Lpeak_array, sample,
-    mbh_mstar_array, N_sampling, mbh, mstar, c1, del_omega, input_variable_count, mass_range_array, LPEAK, double_intersection, include_tcool, h_r)
+    mbh_mstar_array, N_sampling, mbh, mstar, c1, del_omega, input_variable_count, mass_range_array, LPEAK, double_intersection, h_r, f, include_tcool)
     check_input[input_variable_count] = 1
     nan_check.append(nan)
 
     input_variable_count += 1
     double_intersection, mbh_mstar_array, mass_range_array, nan, t0_range=module.find_mbh_mstar_from_input(Tpeak_array, sample,
-    mbh_mstar_array, N_sampling, mbh, mstar, c1, del_omega, input_variable_count, mass_range_array, TPEAK, double_intersection, include_tcool, h_r)
+    mbh_mstar_array, N_sampling, mbh, mstar, c1, del_omega, input_variable_count, mass_range_array, TPEAK, double_intersection, h_r, f, include_tcool)
     check_input[input_variable_count] = 1
     nan_check.append(nan)
 
@@ -121,27 +119,27 @@ for sample in range(samplesize):
         #First try to find the solution
         retv, mbh_sol, mstar_sol = module.solver1_LT(Lpeak_array[0][sample], Tpeak_array[0][sample], centroid_bh, centroid_star, c1, del_omega)
         #Check if the solutions are correct. If not try the second solver
-        error_L, error_T = module.relative_error_calc(LPEAK, TPEAK, Lpeak_array[0][sample], Tpeak_array[0][sample],  mbh_sol, mstar_sol, c1, del_omega, include_tcool, h_r)
+        error_L, error_T = module.relative_error_calc(LPEAK, TPEAK, Lpeak_array[0][sample], Tpeak_array[0][sample],  mbh_sol, mstar_sol, c1, del_omega, h_r, f, include_tcool)
         #if include_tcool=1, the final solution is found in solver2_LT()
         if(retv!=0 or error_L > TOL or error_T > TOL or include_tcool==1):
-            retv, mbh_sol, mstar_sol = module.solver2_LT (Lpeak_array[0][sample], Tpeak_array[0][sample], centroid_bh, centroid_star, c1, del_omega, include_tcool, h_r)
-            error_L, error_T = module.relative_error_calc(LPEAK, TPEAK, Lpeak_array[0][sample], Tpeak_array[0][sample],  mbh_sol, mstar_sol, c1, del_omega, include_tcool, h_r)
+            retv, mbh_sol, mstar_sol = module.solver2_LT (Lpeak_array[0][sample], Tpeak_array[0][sample], centroid_bh, centroid_star, c1, del_omega, h_r, f, include_tcool)
+            error_L, error_T = module.relative_error_calc(LPEAK, TPEAK, Lpeak_array[0][sample], Tpeak_array[0][sample],  mbh_sol, mstar_sol, c1, del_omega, h_r, f, include_tcool)
             if(include_tcool==1):
                 mbh_sol_range = []
                 mstar_sol_range = []
-                retv, mbh_sol1, mstar_sol1 = module.solver2_LT (Lpeak_array[0][sample] - Lpeak_array[1][sample][0], Tpeak_array[0][sample] - Tpeak_array[1][sample][0], mbh_sol, mstar_sol, c1, del_omega, include_tcool, h_r)
+                retv, mbh_sol1, mstar_sol1 = module.solver2_LT (Lpeak_array[0][sample] - Lpeak_array[1][sample][0], Tpeak_array[0][sample] - Tpeak_array[1][sample][0], mbh_sol, mstar_sol, c1, del_omega, h_r, f, include_tcool)
                 if(retv==0):
                     mbh_sol_range.append(mbh_sol1)
                     mstar_sol_range.append(mstar_sol1)
-                retv, mbh_sol1, mstar_sol1 = module.solver2_LT (Lpeak_array[0][sample] - Lpeak_array[1][sample][0], Tpeak_array[0][sample] + Tpeak_array[1][sample][1], mbh_sol, mstar_sol, c1, del_omega, include_tcool, h_r)
+                retv, mbh_sol1, mstar_sol1 = module.solver2_LT (Lpeak_array[0][sample] - Lpeak_array[1][sample][0], Tpeak_array[0][sample] + Tpeak_array[1][sample][1], mbh_sol, mstar_sol, c1, del_omega, h_r, f, include_tcool)
                 if(retv==0):
                     mbh_sol_range.append(mbh_sol1)
                     mstar_sol_range.append(mstar_sol1)
-                retv, mbh_sol1, mstar_sol1 = module.solver2_LT (Lpeak_array[0][sample] + Lpeak_array[1][sample][1], Tpeak_array[0][sample] - Tpeak_array[1][sample][0], mbh_sol, mstar_sol, c1, del_omega, include_tcool, h_r)
+                retv, mbh_sol1, mstar_sol1 = module.solver2_LT (Lpeak_array[0][sample] + Lpeak_array[1][sample][1], Tpeak_array[0][sample] - Tpeak_array[1][sample][0], mbh_sol, mstar_sol, c1, del_omega, h_r, f, include_tcool)
                 if(retv==0):
                     mbh_sol_range.append(mbh_sol1)
                     mstar_sol_range.append(mstar_sol1)
-                retv, mbh_sol1, mstar_sol1 = module.solver2_LT (Lpeak_array[0][sample] + Lpeak_array[1][sample][1], Tpeak_array[0][sample] + Tpeak_array[1][sample][1], mbh_sol, mstar_sol, c1, del_omega, include_tcool, h_r)
+                retv, mbh_sol1, mstar_sol1 = module.solver2_LT (Lpeak_array[0][sample] + Lpeak_array[1][sample][1], Tpeak_array[0][sample] + Tpeak_array[1][sample][1], mbh_sol, mstar_sol, c1, del_omega, h_r, f, include_tcool)
                 if(retv==0):
                     mbh_sol_range.append(mbh_sol1)
                     mstar_sol_range.append(mstar_sol1)
@@ -180,9 +178,8 @@ for sample in range(samplesize):
             mstar_sol_array.append([centroid_star, error_star_l, error_star_h])
             if(include_tcool==0):
                 SOL_FOUND=1
-
-
     
+
     if(SOL_FOUND==1):
         a0_t0_sol = module.get_t0_a0_error(mbh_sol_array[sample], mstar_sol_array[sample], c1)
         print ("{:^25}".format(index_array[sample]), " [   Solution] m_bh[10^6msol]= {0:.2g}".format(mbh_sol),
@@ -191,8 +188,9 @@ for sample in range(samplesize):
     else:
         print ("{:^25}".format(index_array[sample])," [No Solution] within the given mass range: mbh = [",mbh_range[sample][0],
         "-",mbh_range[sample][1],"] 10^{6}msol, mstar = [", mstar_range[sample][0],"-",mstar_range[sample][1],"] msol")
-        mbh_sol_array.append([-100,100,100])
-        mstar_sol_array.append([-100,100,100])
+        if(len(mbh_sol_array) < sample + 1):
+            mbh_sol_array.append([-100,100,100])
+            mstar_sol_array.append([-100,100,100])
         a0_t0_sol=[[-100,-100,-100],[-100,-100,-100]]
 
     module.write_output(output_file, retv_centroid, index_array[sample], mbh_sol_array[sample], mstar_sol_array[sample],
@@ -201,7 +199,7 @@ for sample in range(samplesize):
     
     if(SOL_FOUND==1):
         #Plot the solutions on a (M_BH - M_star) grid
-        pm.plotting(index_array[sample], figure_storage, double_intersection, mbh, mstar, mass_range_array, mbh_mstar_array, mbh_sol, mstar_sol, plot_format, plot_quality, include_tcool, h_r, c1, del_omega)
+        pm.plotting(index_array[sample], figure_storage, double_intersection, mbh, mstar, mass_range_array, mbh_mstar_array, mbh_sol, mstar_sol, plot_format, plot_quality, include_tcool, h_r, f, c1, del_omega)
     double_intersection_array.append(double_intersection)
     
     
@@ -210,5 +208,4 @@ for sample in range(samplesize):
 
 output_file.close()
 #Plot the solutions and their uncertainties on a (M_BH - M_star) grid for entire sample
-pm.plot_double_intersection(figure_storage, index_array, double_intersection_array, mass_range_array, plot_format,
-plot_quality, c1, del_omega, samplesize, mbh_sol_array, mstar_sol_array, solution_exist,include_tcool, h_r)
+pm.plot_double_intersection(figure_storage, index_array, double_intersection_array, mass_range_array, mbh_search_range, mstar_search_range, plot_format, plot_quality, c1, del_omega, samplesize, mbh_sol_array, mstar_sol_array, solution_exist,include_tcool, h_r)
